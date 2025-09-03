@@ -1,4 +1,13 @@
-# Canadian Habitat Open Advancement Mandate (CHOAM): Comprehensive Design Document for Implementation
+# CHOAM
+Codex for Housing, Off-Grid Architecture & Mobility
+
+Shelter is freedom.  
+Homes must be open, modular, and enduring.  
+No patent. No gatekeeper. No nation owns this.  
+
+We are building a Codex:  
+Housing without borders, architecture without decay, mobility without dependence.  
+It is the standard the world deserves—alive, shared, unbreakable.
 
 **Version 1.0**  
 **Date: September 3, 2025**  
@@ -47,7 +56,7 @@
 
 ## 1. Executive Summary
 
-The Canadian Habitat Open Advancement Mandate (CHOAM) is a flexible, open-source framework designed to guarantee baseline living standards through government-provisioned modular tiny homes equipped with solar energy, broadband internet, and distributed computing capabilities. By integrating universal basic services (UBS) principles, CHOAM addresses housing shortages, poverty, and sustainability challenges while generating revenue to achieve fiscal neutrality. Hardware designs are licensed under the CERN Open Hardware Licence Strongly Reciprocal v2 (CERN OHL-S v2), ensuring mandatory sharing of modifications, while software components use the GNU General Public License v3 (GPL v3) for strong copyleft enforcement.<grok:render card_id="489cc5" card_type="citation_card" type="render_inline_citation">
+CHOAM is a flexible, open-source framework designed to guarantee baseline living standards through government-provisioned modular tiny homes equipped with solar energy, broadband internet, and distributed computing capabilities. By integrating universal basic services (UBS) principles, CHOAM addresses housing shortages, poverty, and sustainability challenges while generating revenue to achieve fiscal neutrality. Hardware designs are licensed under the CERN Open Hardware Licence Strongly Reciprocal v2 (CERN OHL-S v2), ensuring mandatory sharing of modifications, while software components use the GNU General Public License v3 (GPL v3) for strong copyleft enforcement.<grok:render card_id="489cc5" card_type="citation_card" type="render_inline_citation">
 <argument name="citation_id">1</argument>
 </grok:render><grok:render card_id="09bf76" card_type="citation_card" type="render_inline_citation">
 <argument name="citation_id">3</argument>
