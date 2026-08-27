@@ -4,7 +4,7 @@
 
 Shelter is freedom. Homes must be open, modular, and enduring. No patent. No gatekeeper. No nation owns this.
 
-CHOAM is a public standard for modular housing: affordable, off-grid capable, disability-accessible, and revenue-positive through solar net-metering and opt-in distributed compute.
+CHOAM is a public standard for modular housing: affordable, off-grid capable, disability-accessible. Solar is load, not a mortgage.
 
 ## Read this first
 
@@ -21,16 +21,27 @@ The design document is [CHOAM-Idea_Draft.md](CHOAM-Idea_Draft.md) (v1.1). v1.0 s
 
 This GitHub repo is licensed **AGPL-3.0**. Hardware derivatives should still carry CERN OHL-S v2 as described in the draft.
 
-## Cost sketch (illustrative)
+## Cost sketch (illustrative, land owned, Ontario-ish 2026)
 
-- Unit: **$50,000–$80,000**
-- Factory: **$1–2B** at national scale
-- Target ROI: **5–7 years** via solar + compute revenue
-- Accessibility is a **requirement**, not an add-on
+200 sq ft reference, volunteer labour, **not** a contractor quote:
+
+| Line | CAD |
+| --- | ---: |
+| Envelope ($160/sq ft) | 32,000 |
+| Accessible wet core | 9,500 |
+| Ramp + landing | 4,800 |
+| Electrical / ESA | 3,200 |
+| 5 kW solar (~$2.70/W installed) | 13,500 |
+| 10 kWh second-life pack | 2,200 |
+| **Total** | **~65,200** |
+
+Energy at $0.12/kWh on ~5,500 kWh/year is ~$660. That is a **century** of payback. Avoided rent at $1,200/mo is ~$14,400/year — about **4.5 years**. The honest ROI is rent replacement. BOINC/Folding@home pays the household nothing; a compute node is hardware only.
+
+Factory $1–2B remains a government program, not this repo. Accessibility is a **requirement**, not an add-on.
 
 ## Status
 
-Design document only. No CAD, no BOM, no factory partners. Next useful commits: a 200 sq ft reference frame, a net-metering assumptions table, and a PIPEDA note for the compute node.
+Design document plus a 200 sq ft CAD BOM (v1.2). No CAD drawings, no factory partners. Next useful commits: a real lumber takeoff, an ESA checklist, an Ontario ARU by-law note.
 
 ## Contribute
 
