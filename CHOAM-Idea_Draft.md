@@ -1,167 +1,275 @@
 # CHOAM
 Codex for Housing, Off-Grid Architecture & Mobility
 
-Shelter is freedom.  
-Homes must be open, modular, and enduring.  
-No patent. No gatekeeper. No nation owns this.
+**Version 2.0** · 2026-10-18 · Author: Ashlynn ([Dastille](https://github.com/Dastille))
+History: v1.0 (2025-09-03) was drafted by Ashlynn with Grok 4 and carries her manifesto. v1.1 and v1.2 (August 2026) were automated rewrites. v2.0 restores her thesis and adds sources, derivations and limitations. Appendix A lists every change.
 
-We are building a Codex:  
-Housing without borders, architecture without decay, mobility without dependence.  
-It is the standard the world deserves—alive, shared, unbreakable.
+## Author's statement (values, not empirical claims)
 
-**Version 1.1** (v1.0 citation widgets stripped; numbers still illustrative)  
-**Date: September 3, 2025 · repaired August 2026**  
-**Authors: Conceptualized with Grok, maintained by Dastille.**
+> Shelter is freedom.
+> Homes must be open, modular, and enduring.
+> No patent. No gatekeeper. No nation owns this.
+>
+> We are building a Codex:
+> Housing without borders, architecture without decay, mobility without dependence.
 
-## Table of Contents
+These lines are the thesis. The rest of the paper checks how far current evidence supports them and what would have to change where it does not.
 
-1. Executive Summary
-2. Introduction and Purpose
-3. System Requirements
-4. Architecture and Design Overview
-5. Detailed Component Designs
-6. Open-Source Strategy
-7. Implementation Roadmap
-8. Governance and Operations
-9. Risk Management and Mitigations
-10. Economic Analysis
-11. Testing, Validation, and Evaluation
-12. Deployment and Scaling Strategies
-13. Maintenance, Sustainability, and Evolution
-14. Appendices
+## Abstract
 
-## 1. Executive Summary
+**Problem.** Canada needs about 430,000 to 480,000 housing starts a year to 2035 to restore 2019 affordability, against a business-as-usual pace of about 245,000 [CMHC-2025]. Federal law declares adequate housing a human right [NHSA-2019 s.4]. **Proposal.** CHOAM is an open-source (copyleft) standard for government-provided modular homes of 200 to 400 sq ft. Each unit comes with solar, broadband and opt-in distributed computing, as a Universal Basic Services floor [UBS-2017]. The aim is for the units to pay their own way. **Method.** We apply a five-step requirements review: question every requirement, delete, simplify, accelerate, and automate last. Every number is derived from first principles using primary data: NRCan solar resource tables, OEB tariffs, Ontario's net-metering rule, dated Canadian retail material prices, the Job Bank wage, and the CWC lumber EPD. The derivations live in a Rust crate (`model/`). Its test suite asserts that the tables in this paper equal the model's output. **Results.** For a 200 sq ft unit in Toronto, a 5 kWp array yields 5,815 kWh/yr, worth $697.80/yr in Tier-1 bill offsets. Under Ontario net metering it earns **$0 cash**. Energy alone repays a $50k to $80k unit in 71.7 to 114.6 years, so the v1.0 "5 to 7 year ROI via revenue" is not supported for energy. The partial shell materials (framing, sheathing, R22 batts, drywall) cost $4,949.10 before tax. Literature supports 20 to 50% schedule reductions and cost reductions of up to about 20% for factory-built housing [McKinsey-2019; Terner-2017]. It does not support 30%. The revenue-positive and government-floor goals are kept. Section 4 states what would have to change for them to hold.
 
-CHOAM is a flexible, open-source framework designed to guarantee baseline living standards through government-provisioned modular tiny homes equipped with solar energy, broadband internet, and distributed computing capabilities. By integrating universal basic services (UBS) principles, CHOAM addresses housing shortages, poverty, and sustainability challenges while generating revenue to aim at fiscal neutrality.
+## 1. Problem statement and definitions
 
-Hardware designs are licensed under the CERN Open Hardware Licence Strongly Reciprocal v2 (CERN OHL-S v2), ensuring mandatory sharing of modifications. Software components in this repository use AGPL-3.0; the original draft also allowed GPL-3.0 for non-networked tools.
+**Problem.** Provide a dwelling floor to people who lack adequate housing. The dwelling must be (a) safe and compliant with the building code in force, (b) disability-accessible, (c) able to operate off-grid or grid-tied, and (d) specified openly, so that any jurisdiction can build it without a licence fee or a single supplier.
 
-This document is a blueprint for implementation, emphasizing adaptability across jurisdictions without fixed timelines. Precedents include CERN open hardware, UNICEF open-source tools, WikiHouse, BOINC, and Canadian net metering. With safeguards, CHOAM *aims* to reduce construction timelines (modular factory literature often cites up to ~50%) and lower costs on the order of 20–30%. Treat those percentages as design targets, not measured results.
+Definitions used throughout:
 
-## 2. Introduction and Purpose
+- **Unit.** One CHOAM dwelling. The reference unit is a 20 ft × 10 ft single storey (200 sq ft) with 8 ft walls and 2×6 framing at 24 in on centre (`REFERENCE_UNIT` in `model/src/lib.rs`).
+- **Floor (UBS sense).** A service provided to the occupant at no charge at the point of need, as in Universal Basic Services, whose seven services include shelter [UBS-2017].
+- **Government-provided.** Capital and land are supplied by a public body or its delegate (a federal agency in v1.0). The occupant is not required to own land.
+- **Revenue-positive (goal).** Over a stated horizon, the public cash inflows attributable to the unit (energy sales, compute contracts, avoided public costs) are at least its capital plus operating cost. Bill *offsets* to the occupant are reported separately from *cash* revenue.
+- **Open.** Hardware documentation under CERN OHL-S v2 [CERN-OHL] and software under GPL-3.0 (v1.0) or AGPL-3.0 (this repository's licence since its first commit). No patents are asserted.
+- **Verified / derived / unverified.** These are claim statuses, defined in [CLAIMS.md](CLAIMS.md).
 
-CHOAM aims to establish a floor for living standards by provisioning essentials directly, evolving from UBS theories and UBI pilots. It is written against Canada's housing shortage and is portable. The purpose of this document is to guide adopters (governments, non-profits, cooperatives) in deploying CHOAM with openness, sustainability, and resistance to procurement capture.
+## 2. Vision vs feasible (summary)
 
-## 3. System Requirements
+| Ashlynn's idea (v1.0) | Status | What the evidence says | What would have to change |
+| --- | --- | --- | --- |
+| Government-provided modular tiny homes as a UBS floor | **Kept (restored)** | Consistent with NHSA s.4 policy [NHSA-2019]. The scale gap is 232,840 starts/yr above business-as-usual (S3) | A funded program. One factory at 2,000 units/yr meets 0.42% of annual need (S2) |
+| Revenue-positive / fiscal neutrality via solar net metering | **Kept as goal; infeasible as cash in Ontario today** | Net metering pays on-bill credits only; credits expire after 12 months [OEB-NM] (E2c = $0.00) | A cash export tariff or a public virtual power plant (VPP) contract. Otherwise "revenue" means avoided public cost |
+| Revenue from distributed-computing partnerships | **Kept as goal; unverified** | BOINC and Folding@home are volunteer computing [BOINC; FAH]. We found no source for a paid market at household scale | Signed research contracts with published rates |
+| 5–7 year ROI | **Contradicted for energy** | Energy-only payback is 71.7–114.6 yr (E4–E5). A 7-yr energy ROI requires a unit cost ≤ $4,884.60 (E7) | Count avoided shelter, health and emergency costs, which needs sourced public-cost data (Limitations L4) |
+| Up to 50% faster | **Verified (with scope)** | 20–50% schedule reduction [McKinsey-2019]; 40–50% [Terner-2017], measured on multifamily | Pilot measurement on single-storey units |
+| 20–30% cheaper | **Partly verified** | "More than 20%" possible at scale [McKinsey-2019]; "up to 20%" of hard cost [Terner-2017]. 30% is not supported | Pilot cost data |
+| Blockchain tracking for anti-corruption | **Restored** (silently dropped in v1.1) | Can give tamper-evident procurement records, but does not stop off-chain bribery or collusion; needs policy and citizen monitoring [WEF-2020] | Pair it with open contracting data [OCDS] and audits |
+| Standardized interfaces "ICC 1220" | **Corrected** | No ICC 1220 exists. The ICC/MBI off-site standards are 1200, 1205 and 1210 [ICC-MBI] | In Canada, CSA A277 factory certification against the provincial code [CHBA-A277] |
+| $500–600/sq ft factory cost | **Deleted (no source)** | Replaced by a bill-of-materials (BOM) derivation (section 10) | — |
+| $1–2B factories; 16 weeks/unit; $1–3B solar; $1B compute; $10–20B savings | **Deleted as numbers (no source)**, kept as program lines | No primary source found | Sourced program costing |
+| Mobility ("mobility without dependence") | **Kept; undeveloped** | Not specified in any version | A future section |
+| GPL v3 for software; host on GitLab/Codeberg | **Restored** as her stated choice | The repo LICENSE (her first commit) is AGPL-3.0, which is GPL-3.0-compatible | — |
 
-### 3.1 Functional Requirements
+## 3. Five-step requirements review
 
-- **Housing**: Produce and distribute modular tiny homes (200–400 sq ft) with customizable utility interfaces.
-- **Energy**: Integrate 5–10 kW solar arrays per unit, enabling net metering for excess power.
-- **Connectivity and computing**: Provide broadband and opt-in distributed computing nodes for research tasks.
-- **Service extensions**: Food-security vouchers and health ties, adapted locally.
-- **Open-source compliance**: All designs must allow modification and redistribution under the stated licenses.
-- **Accessibility**: Ramps, 36-inch clearances, reachable controls, and layouts that work with mobility devices. This is a requirement, not a variant.
+**Step 1: question every requirement and name its source.**
 
-### 3.2 Non-Functional Requirements
+| Requirement | Source | Question | Decision |
+| --- | --- | --- | --- |
+| 200–400 sq ft modular unit | Ashlynn v1.0 | Is the size legal as a dwelling where it is built? | Keep. Check against the code in force (2024 OBC in Ontario [OBC-2024]) per site |
+| Government-provided | Ashlynn v1.0 | Who pays? | Keep. A public body pays capital and land (section 9) |
+| Land owned by the occupant; volunteer labour | v1.2 rewrite (not hers) | Contradicts the floor for people without housing | **Delete.** Labour is costed at the Ontario median wage (L1–L3) |
+| 5–10 kW solar per unit | Ashlynn v1.0 | Is it sized for revenue that Ontario will not pay in cash? | Keep 5 kWp as reference. Size to measured load in the pilot |
+| Net-metering revenue | Ashlynn v1.0 | Is it cash? | No in Ontario (E2c). Reclassify as an occupant bill offset |
+| Compute revenue | Ashlynn v1.0 | Is there a buyer? | Unverified. Keep opt-in, carry $0 in the model until a contract exists |
+| Blockchain tracking | Ashlynn v1.0 | Does it prevent graft? | Partly [WEF-2020]. Keep, paired with OCDS |
+| ICC 1220 interfaces | v1.0 (error) | Does it exist? | No. Replace with ICC/MBI 1200/1205/1210 and CSA A277 |
+| 36-inch clearances | v1.1 rewrite | Source? | No source. Keep accessibility as a requirement and take dimensions from the applicable code |
+| Factory $1–2B | v1.0 | Source? | None. Delete the number |
 
-- **Scalability**: Pilots of ~100 units to national scale; factory sketches of 1,000–2,000 units/year.
-- **Security**: PIPEDA (and GDPR where applicable); encrypted data on compute nodes; opt-in only.
-- **Sustainability**: Zero-waste design target; recyclable components.
-- **Cost**: $50,000–$80,000 per unit, with a 5–7 year ROI sketch via revenue.
+**Step 2: delete.** Removed: occupant land ownership, volunteer labour, every unsourced dollar figure, and "ICC 1220".
 
-## 4. Architecture and Design Overview
+**Step 3: simplify.** One rectangular footprint. 2×6 at 24 in o.c. uses fewer pieces than 16 in o.c. (asserted in `closer_stud_spacing_needs_more_studs`); structural adequacy must be confirmed under NBC 2020 Part 9 wall-stud rules (Subsection 9.23.10, Table 9.23.10.1: 2×6 at 600 mm o.c. is listed for exterior walls supporting a roof plus at most one floor [BCBC-9.23]). Use 2D panels rather than 3D modules where transport dominates: McKinsey reports about $8/m² to ship 2D panels ~250 km against about $45/m² for 3D modules [McKinsey-2019].
 
-Modular and decentralized. Central repositories host designs; factories produce components; units connect to grids and networks for revenue.
+**Step 4: accelerate.** Off-site fabrication runs in parallel with site work, which is the mechanism behind the 40–50% time reduction [Terner-2017]. Only accelerate after the design is frozen by the pilot.
 
-Flow: Design → Manufacture → Deploy → Operate → Monetize.
+**Step 5: automate last.** CNC-cut frames in the WikiHouse tradition [WikiHouse] come after the pilot, not before. The calculations in this paper are already automated: `cargo test` fails if any table here drifts from the model.
 
-Interfaces should be standardized (ICC 1220-class, or the local equivalent) so a solar string, a compute node, and a kitchen wet-core can be swapped without a custom carpenter.
+## 4. Requirements
 
-## 5. Detailed Component Designs
+### 4.1 Functional
+- **Housing.** Modular homes of 200–400 sq ft with plug-and-play utility interfaces.
+- **Energy.** 5–10 kW solar per unit (reference 5 kWp, see E2), grid-tied via net metering where allowed, with storage for off-grid operation.
+- **Connectivity and computing.** Broadband, plus opt-in distributed-computing nodes for research tasks.
+- **Services.** Food-security vouchers and health ties, adapted locally.
+- **Accessibility.** Ramps and adaptable layouts that meet the disability provisions of the code in force. This is a requirement, not an option.
+- **Open-source compliance.** Every design may be modified and redistributed under the licences in section 7.
 
-### 5.1 Modular Housing Framework
+### 4.2 Non-functional
+- **Scale.** Pilots of 100–500 units, then factories of 1,000–2,000 units/yr (her figures). Against CMHC's 477,840 starts/yr, one factory supplies 0.21–0.42% (S1–S2).
+- **Privacy.** PIPEDA [PIPEDA]. Compute-node data is encrypted, and participation is opt-in.
+- **Sustainability.** A zero-waste design target with recyclable components. Embodied carbon is reported per material where an EPD exists (C1).
+- **Cost target.** $50,000–80,000 per unit (her target; **unverified**, see section 10.3).
 
-Stackable units with open-source blueprints (CNC-cut frames in the WikiHouse tradition). Plug-and-play utility modules. Cost literature for factory modular often lands far above stick-build per square foot until volume; the $500–600/sq ft figure in v1.0 is a **warning**, not a target. CHOAM's $50–80k envelope at 200–400 sq ft implies $125–400/sq ft — ambitious, and it only works with volunteer/public land, simple envelopes, and no luxury fit-out.
+## 5. Architecture and code compliance
 
-### 5.2 Renewable Energy Integration
+Design → Manufacture → Deploy → Operate → Account. v1.0's last step was "Monetize". It is renamed because section 10 shows that cash revenue is $0 under current Ontario rules.
 
-Rooftop solar with batteries. Excess sold via net metering (illustrative $200–500/unit/year depending on tariff — check the actual IESO/utility rider before using this in a budget). Open-source inverters; aggregate into virtual power plants. Grid constraints are mitigated with storage and policy, not wishful interconnection.
+- **Interfaces.** ICC/MBI 1200-2021 (planning, design, fabrication, assembly), ICC/MBI 1205-2021 (inspection and regulatory compliance) and ICC/MBI 1210-2023 (MEP, energy, water) [ICC-MBI] are the published off-site standards. They are US standards and serve here as design references.
+- **Canada.** The NBC applies to both site-built and factory-constructed buildings (NBC 2020 Div. A, Sentence 1.1.1.1.(2) and Note A-1.1.1.1.(2)). CSA A277 is a certification *procedure*, not a code: it certifies factory work against the locally applicable code [CHBA-A277]. Ontario adopted NBC 2020 with amendments as the 2024 Ontario Building Code (O. Reg. 163/24), in force 2025-01-01 [OBC-2024]. NBC 2020 has been succeeded by NBC 2025 (published 2025-12-22) [NBC-2020].
+- **Electrical.** Any grid connection needs utility approval and inspection [OEB-NM].
 
-### 5.3 Internet and Distributed Computing Network
+## 6. Component designs
 
-Broadband nodes running copyleft software for opt-in tasks (BOINC-class). Revenue from research partnerships. Excess solar powers the node so the household is not billed to donate cycles. PIPEDA: no ambient audio, no facial capture, no off-box identity.
+### 6.1 Modular housing
+Stackable units built from open blueprints (CNC-cut frames, WikiHouse-style [WikiHouse]), with plug-and-play utility modules. The partial shell BOM appears in section 10.2.
 
-### 5.4 Additional Baseline Services
+### 6.2 Energy
+Rooftop solar with batteries. Excess goes to the grid under net metering as on-bill credits [OEB-NM], and open-source inverters may be aggregated into a VPP. **Derivation chain:** annual kWh = kWp × PSH × 365 × PR. PSH = 4.25 kWh/m²/day is Toronto's latitude-tilt insolation [NRCan-PV, municip_kWh.csv]. PR = 0.7497 is implied by NRCan's own PV-potential table (1,163 kWh/kWp/yr), so the chain reproduces NRCan exactly (E1–E3). Winter output is much lower: the December latitude-tilt potential is 51 kWh/kWp for the month [NRCan-PV].
 
-Vouchers for food; ties to healthcare. Open-source apps for household management — never a mandatory telemetry agent.
+### 6.3 Internet and distributed computing
+Broadband nodes run copyleft software for opt-in, BOINC-class research tasks [BOINC; FAH]. Excess solar powers the node. Compute revenue is **unverified** and carried at $0.
 
-## 6. Open-Source Strategy
+### 6.4 Baseline services
+Food vouchers and health ties come through existing programs. Household-management apps are open source and never send mandatory telemetry.
 
-### 6.1 Licensing and Governance
+## 7. Open-source strategy
+- **Hardware.** CERN OHL-S v2 (strongly reciprocal) [CERN-OHL].
+- **Software.** GPL-3.0 (Ashlynn's v1.0 choice) [GPL-3]. This repository is AGPL-3.0 [AGPL-3], set in her first commit. The two licences are compatible.
+- **Governance.** A steering committee with public input, and OSHWA certification as a credibility check.
+- **Hosting.** Her stated preference is GitLab/Codeberg. The canonical copy is currently on GitHub, and mirrors are welcome.
 
-- **Hardware**: CERN OHL-S v2, including full documentation for derivatives.
-- **Software**: AGPL-3.0 for anything networked; GPL-3.0 acceptable for offline tools.
-- **Governance**: Steering committee with public minutes; OSHWA certification as a credibility check.
+## 8. Implementation roadmap
+- **Pilot.** 100–500 units in volunteer jurisdictions. Measure delivered cost, days to occupy, kWh, accessibility pass rate, and privacy incidents.
+- **Scale-up.** Build factories once the pilot's numbers replace the unverified rows in CLAIMS.md.
+- **Optimization.** Full deployment, global partnerships, and export of parts. The specification stays public.
 
-### 6.2 Repository and Collaboration
+## 9. Governance and operations
+A central body (a federal agency, per v1.0) sets the specification. Provincial and municipal partners site the units. Public dashboards report cost, vacancy, energy and compute hours, and there is an annual public audit. v1.1 added "or a co-op federation" as an alternative. That alternative is noted here, but it was not hers.
 
-GitHub is fine; Codeberg/GitLab mirrors are welcome. Required: CONTRIBUTING.md, issue templates, public bill-of-materials.
+## 10. Economic analysis (first principles)
 
-## 7. Implementation Roadmap
+### 10.1 Method
+Material cost = quantity (from geometry) × dated unit price. Labour = hours × the Ontario carpenter median wage of $32.00/h [JobBank]. Energy value = kWh × tariff. Take-off rules for the reference unit:
+- **Studs per wall:** ceil(L × 12 / 24) + 1, plus 2 per corner.
+- **Plates:** 3 × perimeter, cut from 8 ft pieces.
+- **OSB:** walls + roof deck + subfloor.
+- **R22 batts:** walls + roof + floor.
+- **Drywall:** wall interiors + ceiling.
+- No deduction for openings.
 
-- **Pilot**: 100–500 units in volunteer jurisdictions.
-- **Scale-up**: Factories only after the pilot's cost, accessibility, and energy numbers are real.
-- **Optimization**: Export of parts, not of a gated franchise.
+Unit prices are Kent.ca retail, accessed 2026-10-18, pre-tax [Kent]. Lumber carbon uses CWC EPD 845, Table 7 (Ontario, A1–A3 = 54.6 kg CO₂e/m³) [CWC-EPD].
 
-Resource sketch: $1–2B for factories if a nation actually does this. Timelines for modular can be shorter than site-built (literature: on the order of 16 weeks/unit once the line exists). Adapt per adopter.
+### 10.2 Results (generated; do not edit by hand)
 
-## 8. Governance and Operations
+<!-- BEGIN GENERATED BY choam-model (cargo run -q -p choam-model) -->
+| ID | Quantity | Value | Chain |
+| --- | --- | ---: | --- |
+| E1 | Implied performance ratio (NRCan) | 0.7497 | 1163 / (4.25 x 365) |
+| E2 | 5 kWp annual yield, Toronto | 5815 kWh/yr | 5 x 4.25 x 365 x 0.7497 |
+| E2a | 5 kWp mean daily yield | 15.93 kWh/day | annual / 365 |
+| E2b | 5 kWp bill offset at Tier 1 | $697.80/yr | annual x $0.120 |
+| E2c | 5 kWp cash revenue (net metering) | $0.00/yr | O. Reg. 541/05: credits only |
+| E3 | 10 kWp annual yield, Toronto | 11630 kWh/yr | 10 x 4.25 x 365 x 0.7497 |
+| E3a | 10 kWp mean daily yield | 31.86 kWh/day | annual / 365 |
+| E3b | 10 kWp bill offset at Tier 1 | $1395.60/yr | annual x $0.120 |
+| E3c | 10 kWp cash revenue (net metering) | $0.00/yr | O. Reg. 541/05: credits only |
+| E4 | Energy-only payback on a $50000 unit (5 kWp) | 71.7 yr | 50000 / 697.80 |
+| E5 | Energy-only payback on a $80000 unit (5 kWp) | 114.6 yr | 80000 / 697.80 |
+| E6 | Max unit cost for a 5-yr energy-only ROI (5 kWp) | $3489.00 | 5 x 697.80 |
+| E7 | Max unit cost for a 7-yr energy-only ROI (5 kWp) | $4884.60 | 7 x 697.80 |
+| B1 | 2x6x8 SPF (studs + plates) | 65 x $6.68 = $434.20 | Kent.ca 2026-10-18 |
+| B2 | 7/16 OSB 4x8 (walls, roof deck, subfloor) | 28 x $16.23 = $454.44 | Kent.ca 2026-10-18 |
+| B3 | R22 ComfortBatt 37.5 sq ft bag | 24 x $152.53 = $3660.72 | Kent.ca 2026-10-18 |
+| B4 | 1/2 drywall 4x8 (walls + ceiling) | 22 x $18.17 = $399.74 | Kent.ca 2026-10-18 |
+| B5 | Partial shell materials, 200 sq ft (pre-tax) | $4949.10 | sum B1-B4 |
+| B6 | Partial shell materials per sq ft | $24.75/sq ft | B5 / 200 |
+| L1 | Labour at 100 h (sensitivity point, not an estimate) | $3200.00 | 100 x $32.00 |
+| L2 | Labour at 200 h (sensitivity point, not an estimate) | $6400.00 | 200 x $32.00 |
+| L3 | Labour at 400 h (sensitivity point, not an estimate) | $12800.00 | 400 x $32.00 |
+| C1 | Lumber embodied carbon A1-A3 | 46.1 kg CO2e | 65 pcs x 0.01298 m3 x 54.6 |
+| S1 | Share of CMHC annual need from one factory at 1000 units/yr | 0.21% | 1000 / 477,840 |
+| S2 | Share of CMHC annual need from one factory at 2000 units/yr | 0.42% | 2000 / 477,840 |
+| S3 | CMHC gap above business-as-usual | 232840 starts/yr | 477,840 - 245,000 |
+<!-- END GENERATED -->
 
-Central body (federal or a co-op federation) sets the spec. Provincial/municipal partners site the units. Dashboards for cost, vacancy, energy export, compute hours. Annual public audit.
+### 10.3 Interpretation
+- The partial shell (B5) is a small fraction of the $50–80k target. The rest of the cost sits in items not yet derived: roof and floor structure, roofing, windows, doors, foundation, wet core, electrical, mechanical, ramp, finishes, permits, land and site work. Until those are taken off, **the $50–80k unit cost is unverified**.
+- Labour hours for a 200 sq ft unit have no primary source yet. L1–L3 are sensitivity points only.
+- Energy pays the occupant about $698/yr in offsets, not the public in cash. Revenue-positive therefore depends on avoided public costs (unsourced, L4) or a change in export rules.
+- R22 in the roof and floor is a placeholder. Insulation must meet the energy-efficiency requirements of the code in force.
 
-## 9. Risk Management and Mitigations
+### 10.4 Benefit-cost framework
+The public-finance case is avoided costs: shelter, health and emergency services. v1.0 stated $10–20B. No source has been found, so the figure is not used.
+
+## 11. Risk management
 
 | Class | Failure | Mitigation |
 | --- | --- | --- |
-| Economic | Cost overrun, market distortion | PPPs with open books, unit-cost caps |
-| Social / political | Inequity, NIMBY | Community siting, disability and income audits |
-| Technical | Interface drift | Frozen spec + DIN/ICC-class standards |
-| Environmental | Construction waste | Lifecycle assessment, take-back |
-| Legal / security | Privacy abuse on compute nodes | PIPEDA, no default cameras, deletion logs |
-| Corruption | Procurement graft | Open contracting, beneficial-ownership registries, whistleblower protection (OECD / UNCAC posture) |
+| Economic | Cost overrun | Open-book BOMs; regenerate the model on every price change |
+| Social / political | Inequity, siting opposition | Community siting; disability and income audits |
+| Technical | Interface drift | Frozen spec against ICC/MBI 1200/1205/1210 and CSA A277 certification |
+| Environmental | Construction waste, embodied carbon | Lifecycle assessment per EPD; take-back |
+| Legal / privacy | Abuse of compute nodes | PIPEDA; no default cameras; deletion logs |
+| Corruption | Procurement graft | Open contracting [OCDS], blockchain tracking [WEF-2020], beneficial-ownership registries, whistleblower protection (OECD / UNCAC [UNCAC]) |
 
-## 10. Economic Analysis
+## 12. Testing, validation and evaluation
+`cargo test` (from a clean clone) checks four things:
+1. Every derivation behaves as specified.
+2. Invalid inputs are rejected.
+3. The block in section 10.2 is byte-identical to `cargo run -q -p choam-model`.
+4. The README quotes the model's figures.
 
-### 10.1 Cost projections
+CI runs fmt, clippy (warnings denied), the tests and `cargo audit`. Pilot metrics are listed in section 8, and a third-party audit comes before scale-up.
 
-Factories $1–2B initial; units $50k–80k. Both are **order-of-magnitude**.
+## 13. Prior work
+- **Universal Basic Services**, including shelter, free at the point of need [UBS-2017]. CHOAM is a concrete shelter specification for that idea.
+- **Right to housing.** Canada's National Housing Strategy Act [NHSA-2019].
+- **Off-site construction economics.** Terner Center 2017 (multifamily: up to 20% hard-cost savings, 40–50% time) [Terner-2017]; McKinsey 2019 (20–50% schedule, more than 20% cost at scale, 2D vs 3D logistics) [McKinsey-2019].
+- **Open housing hardware.** WikiHouse [WikiHouse]; CERN OHL [CERN-OHL].
+- **Volunteer computing.** BOINC [BOINC]; Folding@home [FAH].
+- **Procurement transparency.** WEF/IDB blockchain procurement pilot (Colombia) [WEF-2020]; Open Contracting Data Standard [OCDS].
+- **Codes.** ICC/MBI off-site standards [ICC-MBI]; CSA A277 [CHBA-A277]; NBC 2020 [NBC-2020]; 2024 OBC [OBC-2024].
 
-### 10.2 Revenue models
+## 14. Limitations
+- **L1.** The BOM covers four material lines only (B1–B4), at one Atlantic-Canada retailer's prices, pre-tax, without delivery or volume discounts. Ontario prices may differ.
+- **L2.** The labour hours are not sourced. The wage is a 2023–2024 reference-period median that we read through a search index, because jobbank.gc.ca refused a direct fetch.
+- **L3.** The energy figures use NRCan's municipal model for Toronto at latitude tilt. They are not a site simulation, and shading, snow and orientation will lower them. Tier-1 is the commodity price only; whether net-metering credits offset other volumetric charges depends on the utility.
+- **L4.** The avoided public costs needed for "revenue-positive" have not been sourced.
+- **L5.** The code-compliance statements cite the codes' scope and certification route. They are not a code review of a design, because no drawings exist yet.
+- **L6.** The construction-speed and cost literature is US multifamily evidence and may not transfer to 200 sq ft single-storey units.
+- **L7.** Embodied carbon covers the lumber only (fossil, A1–A3). OSB, insulation and gypsum EPDs have not been applied.
 
-Solar aggregate and compute partnerships are the two intended streams. v1.0's "$1–3B solar / $1B compute" lines are national-scale sketches, not a pro forma.
+## References
+- [AGPL-3] GNU Affero GPL v3. https://www.gnu.org/licenses/agpl-3.0.html
+- [BCBC-9.23] BC Building Code (NBC-derived Part 9), Section 9.23 Wood-Frame Construction, Table 9.23.10.1. https://free.bcpublications.ca/civix/document/id/public/bcbc2006/building_B_P9_9.23
+- [BOINC] BOINC, UC Berkeley. https://boinc.berkeley.edu/
+- [CERN-OHL] CERN Open Hardware Licence v2. https://cern-ohl.web.cern.ch/ (text: https://ohwr.org/cern_ohl_s_v2.txt)
+- [CHBA-A277] Canadian Home Builders' Association, "Code Compliance for Modular Construction" (CSA A277; NBC Note A-1.1.1.1.(2)). https://www.chba.ca/code-compliance-for-modular-construction/
+- [CMHC-2025] CMHC (2025-06-19), "Canada's Housing Supply Shortages: Moving to a New Framework", Figures 12–13. https://www.cmhc-schl.gc.ca/professionals/housing-markets-data-and-research/housing-research/research-reports/accelerate-supply/canadas-housing-supply-shortages-a-new-framework
+- [CWC-EPD] Canadian Wood Council, EPD 845, "A Regionalized Industry Average EPD for Canadian Softwood Lumber" (2025-02-04), Table 7. https://cwc.ca/publication/a-regionalized-industry-average-epd-for-canadian-softwood-lumber/
+- [FAH] Folding@home. https://foldingathome.org/
+- [GPL-3] GNU GPL v3. https://www.gnu.org/licenses/gpl-3.0.html
+- [ICC-MBI] ICC/MBI Standards for Off-Site Construction 1200-2021, 1205-2021, 1210-2023. https://codes.iccsafe.org/content/ICCMBIOSCS2023P1
+- [JobBank] Job Bank, Carpenter (NOC 72310), Ontario wages. https://www.jobbank.gc.ca/marketreport/wages-occupation/6388/ON
+- [Kent] Kent.ca product pages, accessed 2026-10-18: SKU 1016278 https://kent.ca/en/2-x-6-x-8-spf-stud-kiln-dried-1016278 ; SKU 1027497 https://kent.ca/en/7-16-x-4-x-8-osb-1027497 ; SKU 1016148 https://kent.ca/en/drywall-1-2-x-4-x-8-ultra-light-panel-1016148 ; SKU 1021667 https://kent.ca/en/comfortbatt-woodstd-r22-5-5-x-23-x-47-37-5-sqft-1021667
+- [McKinsey-2019] Bertram et al., "Modular construction: From projects to products", McKinsey & Company, June 2019. https://www.mckinsey.com/capabilities/operations/our-insights/modular-construction-from-projects-to-products
+- [NBC-2020] National Building Code of Canada 2020, NRC. https://doi.org/10.4224/w324-hv93
+- [NHSA-2019] National Housing Strategy Act, S.C. 2019, c. 29, s. 313, section 4. https://laws-lois.justice.gc.ca/eng/acts/N-11.2/section-4.html
+- [NRCan-PV] NRCan, Photovoltaic potential and solar resource maps of Canada, municipal tables. https://open.canada.ca/data/en/dataset/8b434ac7-aedb-4698-90df-ba77424a551f
+- [OBC-2024] O. Reg. 163/24, Building Code (Ontario). https://www.ontario.ca/laws/regulation/r24163
+- [OCDS] Open Contracting Data Standard. https://standard.open-contracting.org/
+- [OEB-NM] Ontario Energy Board, Net metering (O. Reg. 541/05 s. 8(8)). https://oeb.ca/consumer-information-and-protection/net-metering
+- [OEB-RPP] Ontario Energy Board, Electricity rates (effective 2025-11-01). https://oeb.ca/consumer-information-and-protection/electricity-rates
+- [PIPEDA] Personal Information Protection and Electronic Documents Act. https://laws-lois.justice.gc.ca/eng/acts/P-8.6/
+- [Terner-2017] Galante, Draper-Zivetz, Stein, "Building Affordability by Building Affordably", Terner Center, March 2017 (sections "Cost Savings", "Time Savings"). https://ternercenter.berkeley.edu/wp-content/uploads/2020/08/offsite_construction.pdf
+- [UBS-2017] Portes, Reed, Percy, "Social prosperity for the future: A proposal for Universal Basic Services", UCL IGP, 2017. https://discovery.ucl.ac.uk/id/eprint/10080175/
+- [UNCAC] UN Convention against Corruption. https://www.unodc.org/unodc/en/corruption/uncac.html
+- [WEF-2020] World Economic Forum, "Exploring Blockchain Technology for Government Transparency: Blockchain-Based Public Procurement to Reduce Corruption", June 2020. https://www3.weforum.org/docs/WEF_Blockchain_Government_Transparency_Report.pdf
+- [WikiHouse] WikiHouse. https://www.wikihouse.cc/
 
-### 10.3 Benefit-cost
-
-Health and poverty-cost offsets are the public-finance case. ROI 5–7 years is a **target**, gated on tariffs and occupancy.
-
-## 11. Testing, Validation, and Evaluation
-
-Pilot metrics: delivered cost, days-to-occupy, accessibility audit pass rate, kWh exported, compute hours opted-in, user satisfaction, privacy incidents (must be zero). Third-party audit before scale-up.
-
-## 12. Deployment and Scaling Strategies
-
-Start small. Do not announce 100,000 units from a markdown file. Scale factories only on measured unit cost. Parts may export; the spec stays public.
-
-## 13. Maintenance, Sustainability, and Evolution
-
-Spec lives in this repo. Community PRs. Circular-economy take-back for panels, batteries, and CNC waste.
-
-## 14. Appendices
-
-### A. License details
-
-- CERN OHL-S v2 — hardware documentation, strongly reciprocal.
-- AGPL-3.0 — this repository and networked software.
-- GPL-3.0 — optional for offline tools.
-
-### B. Case studies and precedents
-
-WikiHouse; Terner Center modular multifamily (timeline cuts); ARENA-style VPPs; Folding@Home / BOINC; Canadian municipal open-contracting practice.
-
-### C. Glossary
-
-- **UBS**: Universal Basic Services
-- **Copyleft**: License requiring openness in derivatives
-- **VPP**: Virtual power plant
-- **Unimproved land value**: Value of the site excluding buildings — relevant to the companion tax-reform repo
+## Appendix A. Change log of ideas (v1.0 → v2.0)
+- **Restored:**
+  - "government-provisioned" as the default (v1.2 had reframed it as self-build on owned land)
+  - revenue-positive / fiscal neutrality as a goal
+  - blockchain tracking (dropped silently in v1.1)
+  - GPL v3 for software
+  - GitLab/Codeberg preference
+  - "federal agency"
+  - authorship
+- **Removed:** "It is the standard the world deserves—alive, shared, unbreakable" (marketing language).
+- **Corrected:** ICC 1220 → ICC/MBI 1200/1205/1210 and CSA A277.
+- **Deleted as unsourced numbers:**
+  - $500–600/sq ft
+  - $1–2B factories
+  - 16 weeks/unit
+  - $200–500/unit/yr net metering
+  - $1–3B solar
+  - $1B compute
+  - $10–20B savings
+  - 36-inch clearances (added in v1.1)
+- **Replaced:** the v1.2 README BOM ($65,200, unsourced unit prices) by the derived partial BOM in section 10.2.
+- **Flagged:**
+  - 5–7 year ROI (contradicted for energy)
+  - 20–30% cost (only ~20% supported)
+  - net-metering revenue (credits, not cash, in Ontario)
+  - compute revenue (unverified)
