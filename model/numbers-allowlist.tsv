@@ -1,0 +1,406 @@
+# Numbers in model/templates/ that are NOT model output. Every other number in a template must be a
+# {{placeholder}} rendered by the model. Checked by tests/paper_sync.rs::every_template_number_is_generated_or_allowlisted.
+# A row covers every whole-token occurrence of `token` on any template line of `doc` that contains `context`.
+# kind: quote = direct quote of a cited source; author = Ashlynn's (or an earlier rewrite's) figure, quoted as such;
+#       id = identifier (standard, clause, regulation, section, SKU, version, row/list number, product label);
+#       date = date or year; unit = exact unit or calendar constant in a stated formula.
+# A quote/author row may not equal a model-derived value (the test fails), so derived numbers cannot be allowlisted.
+# doc	token	context	kind	source or reason
+paper	2.0	**Version 2.0** · 2026-10-18 	id	paper version
+paper	2026-10-18	**Version 2.0** · 2026-10-18 · Author: Ashly	date	date or year
+paper	2025-09-03	History: v1.0 (2025-09-03) was drafted by	date	date or year
+paper	4	rafted by Ashlynn with Grok 4 and carries her	id	product name (Grok 4)
+paper	2026	esto. v1.1 and v1.2 (August 2026) were automated	date	date or year
+paper	430,000	oblem.** Canada needs about 430,000 to 480,000 hous	quote	[CMHC-2025] "around 430,000 to 480,000 units per year"
+paper	480,000	nada needs about 430,000 to 480,000 housing starts 	quote	[CMHC-2025] "around 430,000 to 480,000 units per year"
+paper	2035	00 housing starts a year to 2035 to restore 2019	date	date or year
+paper	2019	s a year to 2035 to restore 2019 affordability, 	date	date or year
+paper	2025	[CMHC-2025]. Federal law d	date	date or year
+paper	4	 a human right [NHSA-2019 s.4]. **Proposal.**	id	statute section number (NHSA s. 4)
+paper	200	t-provided modular homes of 200 to 400 sq ft. E	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	400	ded modular homes of 200 to 400 sq ft. Each uni	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	2017	l Basic Services floor [UBS-2017]. The aim is fo	date	date or year
+paper	1	r. If every kWh offset Tier-1 consumption it 	id	tariff tier name (Tier 1)
+paper	5	years, so the v1.0 "5 to 7 year ROI v	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	7	years, so the v1.0 "5 to 7 year ROI via re	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	20	eed, the literature reports 20 to 50% schedule	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
+paper	50	he literature reports 20 to 50% schedule reduc	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
+paper	30	. Neither source quantifies 30%. The revenue-p	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure (the 30% in "20–30%")
+paper	1	## 1. Problem statem	id	section heading number
+paper	2	ft walls and 2×6 framing at	id	nominal lumber size label (2×6, 2×6×8)
+paper	6	ft walls and 2×6 framing at	id	nominal lumber size label (2×6, 2×6×8)
+paper	2017	rvices include shelter [UBS-2017].	date	date or year
+paper	3.0	OHL] and software under GPL-3.0 (v1.0) or AGPL-	id	licence version (GPL-3.0 / AGPL-3.0)
+paper	2	## 2. Vision vs feas	id	section heading number
+paper	4	** | Consistent with NHSA s.4 policy [NHSA-20	id	statute section number (NHSA s. 4)
+paper	2019	 with NHSA s.4 policy [NHSA-2019]. The scale gap	date	date or year
+paper	12	 only; credits expire after 12 months [OEB-NM]	quote	[OEB-NM] "up to 12 months"
+paper	5	| 5–7 year ROI | **	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	7	| 5–7 year ROI | **Co	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	50	| Up to 50% faster | **Ver	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	20	**Verified (with scope)** | 20–50% schedule re	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
+paper	2019	chedule reduction [McKinsey-2019]; 40–50% [Terne	date	date or year
+paper	40	 reduction [McKinsey-2019]; 40–50% [Terner-201	quote	[Terner-2017] "reduce project construction time by between 40 and 50 percent"
+paper	2017	insey-2019]; 40–50% [Terner-2017], measured on m	date	date or year
+paper	20	| 20–30% cheaper | *	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	30	| 20–30% cheaper | **Pa	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	2019	percent" at scale [McKinsey-2019]; "up to 20 per	date	date or year
+paper	2017	ost of construction [Terner-2017]. Neither sourc	date	date or year
+paper	2020	and citizen monitoring [WEF-2020] | Pair it with	date	date or year
+paper	1220	tandardized interfaces "ICC 1220" | **Corrected*	id	the nonexistent "ICC 1220" quoted from v1.0 (error being corrected)
+paper	1200	/MBI off-site standards are 1200, 1205 and 1210 	id	ICC/MBI standard designation [ICC-MBI]
+paper	1205	ff-site standards are 1200, 1205 and 1210 [ICC-M	id	ICC/MBI standard designation [ICC-MBI]
+paper	1210	tandards are 1200, 1205 and 1210 [ICC-MBI] | In 	id	ICC/MBI standard designation [ICC-MBI]
+paper	500	| $500–600/sq ft facto	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	600	| $500–600/sq ft factory c	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	10	s (BOM) derivation (section 10) | — |	id	section cross-reference
+paper	1	| $1–2B factories; 1	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	2	| $1–2B factories; 16 	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	16	| $1–2B factories; 16 weeks/unit; $1–	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	3	actories; 16 weeks/unit; $1–3B solar; $1B com	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	10	 $1–3B solar; $1B compute; $10–20B savings | *	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	20	–3B solar; $1B compute; $10–20B savings | **De	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	3.0	 (her first commit) is AGPL-3.0, which is GPL-3	id	licence version (GPL-3.0 / AGPL-3.0)
+paper	3	## 3. Five-step requ	id	section heading number
+paper	1	**Step 1: question every	id	cross-reference number
+paper	200	| 200–400 sq ft modul	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	400	| 200–400 sq ft modular u	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	2024	 against the code in force (2024 OBC in Ontario 	date	date or year
+paper	9	s capital and land (section 9) |	id	section cross-reference
+paper	5	| 5–10 kW solar per	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	10	| 5–10 kW solar per un	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	2020	revent graft? | Partly [WEF-2020]. Keep, paired 	date	date or year
+paper	1220	| ICC 1220 interfaces | v1	id	the nonexistent "ICC 1220" quoted from v1.0 (error being corrected)
+paper	1200	 | No. Replace with ICC/MBI 1200/1205/1210 and C	id	ICC/MBI standard designation [ICC-MBI]
+paper	1205	. Replace with ICC/MBI 1200/1205/1210 and CSA A2	id	ICC/MBI standard designation [ICC-MBI]
+paper	1210	lace with ICC/MBI 1200/1205/1210 and CSA A277 |	id	ICC/MBI standard designation [ICC-MBI]
+paper	36	| 36-inch clearances	author	v1.1 rewrite figure (not hers); deleted as unsourced
+paper	1	| Factory $1–2B | v1.0 | Sou	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	2	| Factory $1–2B | v1.0 | Sourc	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	2	**Step 2: delete.** Remo	id	cross-reference number
+paper	1220	ced dollar figure, and "ICC 1220".	id	the nonexistent "ICC 1220" quoted from v1.0 (error being corrected)
+paper	3	**Step 3: simplify.** On	id	cross-reference number
+paper	2	 One rectangular footprint. 2×6 at	id	nominal lumber size label (2×6, 2×6×8)
+paper	6	ne rectangular footprint. 2×6 at	id	nominal lumber size label (2×6, 2×6×8)
+paper	16	o.c. uses fewer pieces than 16 in o.c. (assert	quote	[NRC-PCF-1677] "spaced at 16 in. (400 mm) o.c." (common spacing)
+paper	2020	uacy is checked against NBC 2020 Part 9, Table 9	date	date or year
+paper	9	ecked against NBC 2020 Part 9, Table 9.23.10.	id	NBC Part number
+paper	9.23.10.1	inst NBC 2020 Part 9, Table 9.23.10.1 (Size and Spaci	id	NBC clause number
+paper	1677	the first printing [NRC-PCF-1677]. For an exteri	id	NRC Proposed Change number
+paper	38	orey unit), the table lists 38 × 89 mm studs a	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+paper	89	unit), the table lists 38 × 89 mm studs at 600	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+paper	600	e lists 38 × 89 mm studs at 600 mm o.c. with a 	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+paper	3.0	studs at 600 mm o.c. with a 3.0 m maximum unsup	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+paper	140	below that height. The 38 × 140 mm (2×6) at 600	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+paper	8	es: McKinsey reports about $8/m² to ship 2D p	quote	[McKinsey-2019] full report, 2D panel logistics
+paper	250	ut $8/m² to ship 2D panels ~250 km against abou	quote	[McKinsey-2019] full report, 2D panel logistics
+paper	45	nels ~250 km against about $45/m² for 3D modul	quote	[McKinsey-2019] full report, 2D panel logistics
+paper	2019	m² for 3D modules [McKinsey-2019].	date	date or year
+paper	4	**Step 4: accelerate.** 	id	cross-reference number
+paper	40	is the mechanism behind the 40–50% time reduct	quote	[Terner-2017] "reduce project construction time by between 40 and 50 percent"
+paper	50	the mechanism behind the 40–50% time reduction	quote	[Terner-2017] "reduce project construction time by between 40 and 50 percent"
+paper	2017	–50% time reduction [Terner-2017]. Only accelera	date	date or year
+paper	5	**Step 5: automate last.	id	cross-reference number
+paper	12	rom a fresh render (section 12).	id	section cross-reference
+paper	4	## 4. Requirements	id	section heading number
+paper	4.1	### 4.1 Functional	id	section heading number
+paper	200	Housing.** Modular homes of 200–400 sq ft with 	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	400	ing.** Modular homes of 200–400 sq ft with plug	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	5	- **Energy.** 5–10 kW solar per	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	10	- **Energy.** 5–10 kW solar per un	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	7	der the licences in section 7.	id	section cross-reference
+paper	4.2	### 4.2 Non-functional	id	section heading number
+paper	100	- **Scale.** Pilots of 100–500 units, then	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	500	- **Scale.** Pilots of 100–500 units, then fac	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	10.3	**unverified**, see section 10.3).	id	section cross-reference
+paper	5	## 5. Architecture a	id	section heading number
+paper	10	 is renamed because section 10 shows that cash	id	section cross-reference
+paper	1200-2021	- **Interfaces.** ICC/MBI 1200-2021 (planning, desi	id	ICC/MBI standard designation [ICC-MBI]
+paper	1205-2021	ication, assembly), ICC/MBI 1205-2021 (inspection and	id	ICC/MBI standard designation [ICC-MBI]
+paper	1210-2023	ory compliance) and ICC/MBI 1210-2023 (MEP, energy, w	id	ICC/MBI standard designation [ICC-MBI]
+paper	2020	-constructed buildings (NBC 2020 Div. A, Sentenc	date	date or year
+paper	1.1.1.1	 (NBC 2020 Div. A, Sentence 1.1.1.1.(2) and Note A-	id	NBC clause number
+paper	2	0 Div. A, Sentence 1.1.1.1.(2) and Note A-1.1	id	NBC sentence number
+paper	2024	2020 with amendments as the 2024 Ontario Buildin	date	date or year
+paper	163	ario Building Code (O. Reg. 163/24), in force 2	id	regulation number O. Reg. 163/24
+paper	24	 Building Code (O. Reg. 163/24), in force 2025	id	regulation number O. Reg. 163/24
+paper	2025-01-01	 (O. Reg. 163/24), in force 2025-01-01 [OBC-2024]. NBC	date	date or year
+paper	2025	0 has been succeeded by NBC 2025 (published 2025	date	date or year
+paper	2025-12-22	eded by NBC 2025 (published 2025-12-22) [NBC-2020].	date	date or year
+paper	6	## 6. Component desi	id	section heading number
+paper	6.1	### 6.1 Modular housing	id	section heading number
+paper	10.2	hell BOM appears in section 10.2.	id	section cross-reference
+paper	6.2	### 6.2 Energy	id	section heading number
+paper	365	** annual kWh = kWp × PSH × 365 × PR. PSH =	unit	days per year
+paper	6.3	### 6.3 Internet and di	id	section heading number
+paper	6.4	### 6.4 Baseline servic	id	section heading number
+paper	7	## 7. Open-source st	id	section heading number
+paper	3.0	- **Software.** GPL-3.0 (Ashlynn's v1.0	id	licence version (GPL-3.0 / AGPL-3.0)
+paper	3	Ashlynn's v1.0 choice) [GPL-3]. This reposito	id	licence version (GPL-3.0 / AGPL-3.0)
+paper	8	## 8. Implementation	id	section heading number
+paper	100	- **Pilot.** 100–500 units in vo	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	500	- **Pilot.** 100–500 units in volunt	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	9	## 9. Governance and	id	section heading number
+paper	10	## 10. Economic analy	id	section heading number
+paper	10.1	### 10.1 Method	id	section heading number
+paper	12	*Studs per wall:** ceil(L × 12 /	unit	inches per foot
+paper	845	 Lumber carbon uses CWC EPD 845, Table 7 (Ontar	id	CWC EPD number
+paper	7	bon uses CWC EPD 845, Table 7 (Ontario, A1–A3	id	cross-reference number
+paper	10.2	### 10.2 Results (genera	id	section heading number
+paper	10.3	### 10.3 Interpretation	id	section heading number
+paper	6.2	7 are upper bounds (section 6.2), a	id	section cross-reference
+paper	10.4	### 10.4 Benefit-cost fr	id	section heading number
+paper	10	ency services. v1.0 stated $10–20B. No source 	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	20	y services. v1.0 stated $10–20B. No source has	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	11	## 11. Risk managemen	id	section heading number
+paper	1200	Frozen spec against ICC/MBI 1200/1205/1210 and C	id	ICC/MBI standard designation [ICC-MBI]
+paper	1205	n spec against ICC/MBI 1200/1205/1210 and CSA A2	id	ICC/MBI standard designation [ICC-MBI]
+paper	1210	c against ICC/MBI 1200/1205/1210 and CSA A277 ce	id	ICC/MBI standard designation [ICC-MBI]
+paper	2020	], blockchain tracking [WEF-2020], beneficial-ow	date	date or year
+paper	12	## 12. Testing, valid	id	section heading number
+paper	1	1. Every derivati	id	numbered-list item
+paper	2	2. Each committed	id	numbered-list item
+paper	3	3. Every other nu	id	numbered-list item
+paper	8	trics are listed in section 8, and a third-pa	id	section cross-reference
+paper	13	## 13. Prior work	id	section heading number
+paper	2017	e at the point of need [UBS-2017]. CHOAM is a co	date	date or year
+paper	2019	 Housing Strategy Act [NHSA-2019].	date	date or year
+paper	2017	 economics.** Terner Center 2017 (multifamily: s	date	date or year
+paper	20	ltifamily: savings of up to 20% on the cost of	quote	[McKinsey-2019] "more than 20 percent" / [Terner-2017] "up to 20 percent"
+paper	40	n the cost of construction, 40–50% time) [Tern	quote	[Terner-2017] "reduce project construction time by between 40 and 50 percent"
+paper	50	he cost of construction, 40–50% time) [Terner-	quote	[Terner-2017] "reduce project construction time by between 40 and 50 percent"
+paper	2019	me) [Terner-2017]; McKinsey 2019 (20–50% schedul	date	date or year
+paper	2	ore than 20% cost at scale, 2D vs 3D logistic	id	2D/3D label
+paper	3	an 20% cost at scale, 2D vs 3D logistics) [Mc	id	2D/3D label
+paper	2020	ement pilot (Colombia) [WEF-2020]; Open Contract	date	date or year
+paper	2020	; CSA A277 [CHBA-A277]; NBC 2020 [NBC-2020]; 202	date	date or year
+paper	2024	A277]; NBC 2020 [NBC-2020]; 2024 OBC [OBC-2024].	date	date or year
+paper	14	## 14. Limitations	id	section heading number
+paper	2023	 not sourced. The wage is a 2023–2024 reference-	date	date or year
+paper	2024	sourced. The wage is a 2023–2024 reference-perio	date	date or year
+paper	1	ation will lower them. Tier-1 is the commodit	id	tariff tier name (Tier 1)
+paper	2020	C's reproduction of the NBC 2020 first printing 	date	date or year
+paper	1677	020 first printing [NRC-PCF-1677]; the NBC 2020 	id	NRC Proposed Change number
+paper	2025	x, and the second printing (2025 errata) was not	date	date or year
+paper	3	- [AGPL-3] GNU Affero GPL	id	licence version (GPL-3.0 / AGPL-3.0)
+paper	1.1.1.1	tion" (CSA A277; NBC Note A-1.1.1.1.(2)).	id	NBC clause number
+paper	2	A A277; NBC Note A-1.1.1.1.(2)).	id	NBC sentence number
+paper	2025	- [CMHC-2025] CMHC (2025-06-	date	date or year
+paper	2025-06-19	- [CMHC-2025] CMHC (2025-06-19), "Canada's Hou	date	date or year
+paper	12	o a New Framework", Figures 12–13.	id	cross-reference number
+paper	13	 New Framework", Figures 12–13.	id	cross-reference (figures/items 12–13)
+paper	845	 Canadian Wood Council, EPD 845, "A Regionalize	id	CWC EPD number
+paper	2025-02-04	 Canadian Softwood Lumber" (2025-02-04), Table 7.	date	date or year
+paper	7	Lumber" (2025-02-04), Table 7.	id	cross-reference number
+paper	3	- [GPL-3] GNU GPL v3.	id	licence version (GPL-3.0 / AGPL-3.0)
+paper	1200-2021	s for Off-Site Construction 1200-2021, 1205-2021, 121	id	ICC/MBI standard designation [ICC-MBI]
+paper	1205-2021	ite Construction 1200-2021, 1205-2021, 1210-2023.	id	ICC/MBI standard designation [ICC-MBI]
+paper	1210-2023	ction 1200-2021, 1205-2021, 1210-2023.	id	ICC/MBI standard designation [ICC-MBI]
+paper	72310	k] Job Bank, Carpenter (NOC 72310), Ontario wages	id	NOC occupation code
+paper	2026-10-18	.ca product pages, accessed 2026-10-18: SKU 1016278	date	date or year
+paper	1016278	s, accessed 2026-10-18: SKU 1016278	id	Kent.ca SKU
+paper	1027497	278   ; SKU 1027497   ; SKU 101	id	Kent.ca SKU
+paper	1016148	497   ; SKU 1016148   ; SKU 102	id	Kent.ca SKU
+paper	1021667	148   ; SKU 1021667	id	Kent.ca SKU
+paper	2019	- [McKinsey-2019] Bertram et al.	date	date or year
+paper	2020	- [NBC-2020] National Build	date	date or year
+paper	2019	- [NHSA-2019] National Housi	date	date or year
+paper	29	Strategy Act, S.C. 2019, c. 29, s. 313, sectio	id	statute citation S.C. 2019, c. 29, s. 313
+paper	313	y Act, S.C. 2019, c. 29, s. 313, section 4.	id	statute citation S.C. 2019, c. 29, s. 313
+paper	4	019, c. 29, s. 313, section 4.	id	statute section number (NHSA s. 4)
+paper	1677	- [NRC-PCF-1677] NRC Codes Cana	id	NRC Proposed Change number
+paper	38	nge 1677, "Clarification of 38 mm × 140 mm Stu	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+paper	140	, "Clarification of 38 mm × 140 mm Stud Usage",	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+paper	9.23.10.1	 Usage", NBC20 Div. B Table 9.23.10.1 (first printing	id	NBC clause number
+paper	2022	9.23.10.1 (first printing), 2022 public review; 	date	date or year
+paper	2024	- [OBC-2024] O. Reg. 163/24	date	date or year
+paper	163	- [OBC-2024] O. Reg. 163/24, Building Co	id	regulation number O. Reg. 163/24
+paper	24	- [OBC-2024] O. Reg. 163/24, Building Code 	id	regulation number O. Reg. 163/24
+paper	541	oard, Net metering (O. Reg. 541/05 s. 8(8)).	id	regulation number O. Reg. 541/05
+paper	05	, Net metering (O. Reg. 541/05 s. 8(8)).	id	regulation number O. Reg. 541/05
+paper	8	metering (O. Reg. 541/05 s. 8(8)).	id	regulation subsection s. 8(8)
+paper	2025-11-01	lectricity rates (effective 2025-11-01).	date	date or year
+paper	2017	- [Terner-2017] Galante, Drape	date	date or year
+paper	2017	- [UBS-2017] Portes, Reed, 	date	date or year
+paper	2020	- [WEF-2020] World Economic	date	date or year
+paper	1220	- **Corrected:** ICC 1220 → ICC/MBI 1200/	id	the nonexistent "ICC 1220" quoted from v1.0 (error being corrected)
+paper	1200	ected:** ICC 1220 → ICC/MBI 1200/1205/1210 and C	id	ICC/MBI standard designation [ICC-MBI]
+paper	1205	:** ICC 1220 → ICC/MBI 1200/1205/1210 and CSA A2	id	ICC/MBI standard designation [ICC-MBI]
+paper	1210	CC 1220 → ICC/MBI 1200/1205/1210 and CSA A277.	id	ICC/MBI standard designation [ICC-MBI]
+paper	500	- $500–600/sq ft	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	600	- $500–600/sq ft	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	1	- $1–2B factories	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	2	- $1–2B factories	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	16	- 16 weeks/unit	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	200	- $200–500/unit/yr net	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	500	- $200–500/unit/yr net met	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	1	- $1–3B solar	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	3	- $1–3B solar	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	1	- $1B compute	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	10	- $10–20B savings	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	20	- $10–20B savings	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+paper	36	- 36-inch clearances	author	v1.1 rewrite figure (not hers); deleted as unsourced
+paper	65,200	ed:** the v1.2 README BOM ($65,200, unsourced unit	author	v1.2 README bot-authored figure; deleted as unsourced
+paper	10.2	ived partial BOM in section 10.2.	id	section cross-reference
+paper	5	- 5–7 year ROI (con	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	7	- 5–7 year ROI (contr	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	20	- 20–30% cost (sourc	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	30	- 20–30% cost (sources 	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+readme	2025	> (Ashlynn, 2025; author's state	date	date or year
+readme	200	provided** modular homes of 200 to 400 sq ft. E	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+readme	400	d** modular homes of 200 to 400 sq ft. Each uni	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+readme	1	). If every kWh offset Tier-1 consumption it 	id	tariff tier name (Tier 1)
+readme	2	port tariff. Paper sections 2 and 10 explain 	id	section cross-reference
+readme	10	ariff. Paper sections 2 and 10 explain what wo	id	section cross-reference
+readme	20	cost.** Factory building is 20–50% faster in t	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
+readme	50	t.** Factory building is 20–50% faster in the 	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
+readme	30	ifamily; neither quantifies 30%.	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure (the 30% in "20–30%")
+readme	1200	-site standards are ICC/MBI 1200, 1205 and 1210,	id	ICC/MBI standard designation [ICC-MBI]
+readme	1205	standards are ICC/MBI 1200, 1205 and 1210, and C	id	ICC/MBI standard designation [ICC-MBI]
+readme	1210	 are ICC/MBI 1200, 1205 and 1210, and CSA A277 i	id	ICC/MBI standard designation [ICC-MBI]
+readme	1220	tification route. (The "ICC 1220" in earlier dra	id	the nonexistent "ICC 1220" quoted from v1.0 (error being corrected)
+readme	3.0	Repository: AGPL-3.0. Hardware docum	id	licence version (GPL-3.0 / AGPL-3.0)
+claims	2026-10-18	All accesses were on 2026-10-18 (America/New_Yo	date	date or year
+claims	1	| 1 | Canada needs 	id	CLAIMS row number
+claims	430	| 1 | Canada needs 430k–480k starts/yr	quote	[CMHC-2025] "around 430,000 to 480,000 units per year"
+claims	480	| 1 | Canada needs 430k–480k starts/yr to 2	quote	[CMHC-2025] "around 430,000 to 480,000 units per year"
+claims	2035	eeds 430k–480k starts/yr to 2035;	date	date or year
+claims	2025	| CMHC 2025, Figures 12–13 	date	date or year
+claims	12	| CMHC 2025, Figures 12–13	id	cross-reference number
+claims	13	| CMHC 2025, Figures 12–13	id	cross-reference (figures/items 12–13)
+claims	2	| 2 | Adequate hous	id	CLAIMS row number
+claims	4	onal Housing Strategy Act s.4	id	statute section number (NHSA s. 4)
+claims	3	| 3 | UBS = 7 servi	id	CLAIMS row number
+claims	7	| 3 | UBS = 7 services incl. 	quote	[UBS-2017] seven services
+claims	2017	 at point of need | UCL IGP 2017, "What are Univ	date	date or year
+claims	4	| 4 | Toronto PV po	id	CLAIMS row number
+claims	5	| 5 | Toronto insol	id	CLAIMS row number
+claims	2.21	y (latitude tilt), December 2.21 | NRCan municip	quote	[NRCan-PV] municip_kWh.csv Toronto December latitude tilt
+claims	6	| 6 | PR  ;   k	id	CLAIMS row number
+claims	365	| `model`: kWp × PSH × 365 × PR (E1–E3) | 	unit	days per year
+claims	7	| 7 | Ontario RPP T	id	CLAIMS row number
+claims	1	| 7 | Ontario RPP Tier 1 =	id	tariff tier name (Tier 1)
+claims	2025-11-01	¢/kWh (from 2025-11-01) | OEB electric	date	date or year
+claims	8	| 8 |   kWp bil	id	CLAIMS row number
+claims	1	) | `model` E2b = E2 × Tier 1 | derived (uppe	id	tariff tier name (Tier 1)
+claims	9	| 9 | Net metering 	id	CLAIMS row number
+claims	12	 cash; credits expire after 12 months | OEB ne	quote	[OEB-NM] "up to 12 months"
+claims	8	metering works" + note on s.8(8) O. Reg. 541/	id	regulation subsection s. 8(8)
+claims	541	s" + note on s.8(8) O. Reg. 541/05	id	regulation number O. Reg. 541/05
+claims	05	 note on s.8(8) O. Reg. 541/05	id	regulation number O. Reg. 541/05
+claims	10	| 10 | Energy-only p	id	CLAIMS row number
+claims	11	| 11 | v1.0 "5–7 yr 	id	CLAIMS row number
+claims	5	| 11 | v1.0 "5–7 yr ROI via re	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+claims	7	| 11 | v1.0 "5–7 yr ROI via reve	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+claims	12	| 12 | Modular cuts 	id	CLAIMS row number
+claims	20	12 | Modular cuts schedules 20–50%; "more than	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
+claims	50	| Modular cuts schedules 20–50%; "more than 20	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
+claims	2019	savings at scale | McKinsey 2019, "Potential for	date	date or year
+claims	13	| 13 | Off-site cuts	id	CLAIMS row number
+claims	40	| 13 | Off-site cuts time 40–50%; saves "up 	quote	[Terner-2017] "reduce project construction time by between 40 and 50 percent"
+claims	50	 13 | Off-site cuts time 40–50%; saves "up to 	quote	[Terner-2017] "reduce project construction time by between 40 and 50 percent"
+claims	20	s time 40–50%; saves "up to 20 percent on the 	quote	[McKinsey-2019] "more than 20 percent" / [Terner-2017] "up to 20 percent"
+claims	3	 the cost of construction" (3–4 storey wood m	quote	[Terner-2017] "three or four story wood frame multifamily"
+claims	4	he cost of construction" (3–4 storey wood mul	quote	[Terner-2017] "three or four story wood frame multifamily"
+claims	2017	ultifamily) | Terner Center 2017, "Cost Savings"	date	date or year
+claims	14	| 14 | v1.0 "lower c	id	CLAIMS row number
+claims	20	| 14 | v1.0 "lower costs by 20–30%" | Items 12	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+claims	30	4 | v1.0 "lower costs by 20–30%" | Items 12–13	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+claims	12	er costs by 20–30%" | Items 12–13: "more than 	id	cross-reference number
+claims	13	costs by 20–30%" | Items 12–13: "more than 20 	id	cross-reference (figures/items 12–13)
+claims	15	| 15 | 2D panels shi	id	CLAIMS row number
+claims	2	| 15 | 2D panels ship ~2	id	2D/3D label
+claims	250	| 15 | 2D panels ship ~250 km for ~$8/m² v	quote	[McKinsey-2019] full report, 2D panel logistics
+claims	8	D panels ship ~250 km for ~$8/m² vs ~$45/m² f	quote	[McKinsey-2019] full report, 2D panel logistics
+claims	45	hip ~250 km for ~$8/m² vs ~$45/m² for 3D | McK	quote	[McKinsey-2019] full report, 2D panel logistics
+claims	3	m for ~$8/m² vs ~$45/m² for 3D | McKinsey 201	id	2D/3D label
+claims	2019	s ~$45/m² for 3D | McKinsey 2019 full report, se	date	date or year
+claims	16	| 16 | ICC/MBI off-s	id	CLAIMS row number
+claims	1200-2021	/MBI off-site standards are 1200-2021, 1205-2021, 121	id	ICC/MBI standard designation [ICC-MBI]
+claims	1205-2021	te standards are 1200-2021, 1205-2021, 1210-2023; "IC	id	ICC/MBI standard designation [ICC-MBI]
+claims	1210-2023	s are 1200-2021, 1205-2021, 1210-2023; "ICC 1220" doe	id	ICC/MBI standard designation [ICC-MBI]
+claims	1220	 1205-2021, 1210-2023; "ICC 1220" does not exist	id	the nonexistent "ICC 1220" quoted from v1.0 (error being corrected)
+claims	17	| 17 | NBC applies t	id	CLAIMS row number
+claims	1.1.1.1	(quotes NBC Note A-1.1.1.1.(2)) | verified	id	NBC clause number
+claims	2	(quotes NBC Note A-1.1.1.1.(2)) | verified |	id	NBC sentence number
+claims	18	| 18 | 2024 OBC (O. 	id	CLAIMS row number
+claims	2024	| 18 | 2024 OBC (O. Reg. 16	date	date or year
+claims	163	| 18 | 2024 OBC (O. Reg. 163/24) adopts NBC 	id	regulation number O. Reg. 163/24
+claims	24	 18 | 2024 OBC (O. Reg. 163/24) adopts NBC 202	id	regulation number O. Reg. 163/24
+claims	2020	(O. Reg. 163/24) adopts NBC 2020 with amendments	date	date or year
+claims	2025-01-01	0 with amendments, in force 2025-01-01 |	date	date or year
+claims	19	| 19 | NBC 2020 succ	id	CLAIMS row number
+claims	2020	| 19 | NBC 2020 succeeded by NB	date	date or year
+claims	2025	| NBC 2020 succeeded by NBC 2025 (2025-12-22) | 	date	date or year
+claims	2025-12-22	2020 succeeded by NBC 2025 (2025-12-22) | NRC Publicat	date	date or year
+claims	20	| 20 | NBC 2020 Tabl	id	CLAIMS row number
+claims	2020	| 20 | NBC 2020 Table 9.23.10.1	date	date or year
+claims	9.23.10.1	| 20 | NBC 2020 Table 9.23.10.1, exterior wall 	id	NBC clause number
+claims	38	all supporting a roof only: 38 × 89 mm at 600 	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+claims	89	upporting a roof only: 38 × 89 mm at 600 mm o.	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+claims	600	 a roof only: 38 × 89 mm at 600 mm o.c., max 3.	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+claims	3.0	× 89 mm at 600 mm o.c., max 3.0 m; 38 × 140 mm 	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+claims	140	00 mm o.c., max 3.0 m; 38 × 140 mm at 600 mm li	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 (existing provision)
+claims	1677	loors | NRC Proposed Change 1677 (reproduces the	id	NRC Proposed Change number
+claims	2	condary (NRC reproduction); 2×6 roof-only at 	id	nominal lumber size label (2×6, 2×6×8)
+claims	6	ndary (NRC reproduction); 2×6 roof-only at 60	id	nominal lumber size label (2×6, 2×6×8)
+claims	21	| 21 | Unit prices: 	id	CLAIMS row number
+claims	2	| 21 | Unit prices: 2×6×8 $ ; 7/16 OS	id	nominal lumber size label (2×6, 2×6×8)
+claims	6	| 21 | Unit prices: 2×6×8 $ ; 7/16 OSB 	id	nominal lumber size label (2×6, 2×6×8)
+claims	8	| 21 | Unit prices: 2×6×8 $ ; 7/16 OSB $ 	id	nominal lumber size label (2×6, 2×6×8)
+claims	7	21 | Unit prices: 2×6×8 $ ; 7/16 OSB $ ; ½ dr	id	product name (7/16 in OSB)
+claims	16	 | Unit prices: 2×6×8 $ ; 7/16 OSB $ ; ½ drywa	id	product name (7/16 in OSB)
+claims	1016278	| Kent.ca SKUs 1016278, 1027497, 10161	id	Kent.ca SKU
+claims	1027497	| Kent.ca SKUs 1016278, 1027497, 1016148, 10216	id	Kent.ca SKU
+claims	1016148	t.ca SKUs 1016278, 1027497, 1016148, 1021667 (URLs 	id	Kent.ca SKU
+claims	1021667	 1016278, 1027497, 1016148, 1021667 (URLs in paper 	id	Kent.ca SKU
+claims	22	| 22 | Partial shell	id	CLAIMS row number
+claims	10.1	del` B1–B5 (rules in paper §10.1) | derived |	id	section cross-reference
+claims	23	| 23 | Ontario carpe	id	CLAIMS row number
+claims	72310	 median $ /h | Job Bank NOC 72310 Ontario	id	NOC occupation code
+claims	24	| 24 | Labour hours 	id	CLAIMS row number
+claims	25	| 25 | Ontario softw	id	CLAIMS row number
+claims	845	kg CO₂e/m³ | CWC EPD 845, Table 7 | veri	id	CWC EPD number
+claims	7	O₂e/m³ | CWC EPD 845, Table 7 | verified |	id	cross-reference number
+claims	26	| 26 | Lumber embodi	id	CLAIMS row number
+claims	27	| 27 | One	id	CLAIMS row number
+claims	28	| 28 | Blockchain ca	id	CLAIMS row number
+claims	2020	ibery/collusion alone | WEF 2020 report, executi	date	date or year
+claims	29	| 29 | BOINC / Foldi	id	CLAIMS row number
+claims	30	| 30 | Paid compute-	id	CLAIMS row number
+claims	31	| 31 | Unit cost $ k	id	CLAIMS row number
+claims	32	| 32 | $500–600/sq f	id	CLAIMS row number
+claims	500	| 32 | $500–600/sq ft; $1–2	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	600	| 32 | $500–600/sq ft; $1–2B fa	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	1	| 32 | $500–600/sq ft; $1–2B factories; 1	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	2	| 32 | $500–600/sq ft; $1–2B factories; 16 	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	16	600/sq ft; $1–2B factories; 16 weeks/unit; $20	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	200	 factories; 16 weeks/unit; $200–500/unit/yr; $1	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	3	/unit; $200–500/unit/yr; $1–3B solar; $1B com	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	10	 $1–3B solar; $1B compute; $10–20B savings; 36	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	20	–3B solar; $1B compute; $10–20B savings; 36-in	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
+claims	36	B compute; $10–20B savings; 36-inch clearances	author	v1.1 rewrite figure (not hers); deleted as unsourced
+claims	33	| 33 | v1.2 README B	id	CLAIMS row number
+claims	65,200	| 33 | v1.2 README BOM $65,200 (unit prices $1	author	v1.2 README bot-authored figure; deleted as unsourced
+claims	160	E BOM $65,200 (unit prices $160/sq ft, $2.70/W 	author	v1.2 README bot-authored figure; deleted as unsourced
+claims	2.70	0 (unit prices $160/sq ft, $2.70/W etc.) | unsou	author	v1.2 README bot-authored figure; deleted as unsourced
+claims	22	| deleted; replaced by item 22 |	id	cross-reference number
+claims	3	## Spot-checks (3 claims re-verif	id	section heading number
+claims	1	1. **Item 16, ICC	id	numbered-list item
+claims	16	1. **Item 16, ICC 1220.** Th	id	cross-reference number
+claims	1220	1. **Item 16, ICC 1220.** The ICC cata	id	the nonexistent "ICC 1220" quoted from v1.0 (error being corrected)
+claims	2025	The ICC catalogue title is "2025 ICC / MBI Stand	date	date or year
+claims	1200-2021	s for Off-Site Construction 1200-2021, 1205-2021, 121	id	ICC/MBI standard designation [ICC-MBI]
+claims	1205-2021	ite Construction 1200-2021, 1205-2021, 1210-2023" (fe	id	ICC/MBI standard designation [ICC-MBI]
+claims	1210-2023	ction 1200-2021, 1205-2021, 1210-2023" (fetched 2026-	id	ICC/MBI standard designation [ICC-MBI]
+claims	2026-10-18	5-2021, 1210-2023" (fetched 2026-10-18). There is no 1	date	date or year
+claims	2	2. **Item 4 / ite	id	numbered-list item
+claims	4	2. **Item 4 / item 6, PV ch	id	cross-reference number
+claims	6	2. **Item 4 / item 6, PV chain.** `g	id	cross-reference number
+claims	1163	ntial.csv` → latitude tilt `1163`. `municip_kWh.	quote	[NRCan-PV] CSV value quoted in a spot-check
+claims	4.25	1163`. `municip_kWh.csv` → `4.25`. Recomputing 1	quote	[NRCan-PV] CSV value quoted in a spot-check
+claims	365	25`. Recomputing 1163/(4.25·365) and	unit	days per year
+claims	3	3. **Item 9, net 	id	numbered-list item
+claims	9	3. **Item 9, net metering c	id	cross-reference number
+claims	12	r to future bills for up to 12 months, after w	quote	[OEB-NM] "up to 12 months"
+claims	0	ich credits are reduced to $0". **Pass**: row	quote	[OEB-NM] "credits are reduced to $0"

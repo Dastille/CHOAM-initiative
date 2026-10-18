@@ -2,10 +2,14 @@
 //!
 //! First-principles calculations behind `CHOAM-Idea_Draft.md` (paper v2.0).
 //!
-//! Every input constant carries its source in its doc comment. Every derived
-//! number printed in the paper is produced by [`render_paper_block`]; the test
-//! suite asserts that the block inside the paper is byte-identical to the
-//! output of this crate, so the paper cannot drift from the model.
+//! Every input constant carries its source in its doc comment. The paper,
+//! `README.md` and `CLAIMS.md` are rendered from `model/templates/` by
+//! [`render_paper`], [`render_readme`] and [`render_claims`]: every
+//! model-derived number in them, prose included, is a `{{key}}` placeholder
+//! filled from [`values`]. Every other number must be on
+//! `model/numbers-allowlist.tsv` with its location and source. The test suite
+//! asserts that the committed files equal a fresh render and that the
+//! allowlist covers every remaining number.
 //!
 //! ```
 //! let e = choam_model::pv_energy(5.0).unwrap();
@@ -13,23 +17,34 @@
 //! ```
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
+#![warn(clippy::pedantic)]
 
+pub mod docgen;
+
+use docgen::{grouped, DocError, Value};
 use std::fmt;
 
 // ---------------------------------------------------------------------------
 // Sourced inputs
 // ---------------------------------------------------------------------------
 
-/// NRCan "Photovoltaic potential and solar resource maps of Canada",
+/// `NRCan` "Photovoltaic potential and solar resource maps of Canada",
 /// municipal table `municip_potentiel-potential.csv`, row Ontario/Toronto,
 /// Annual, column "South-facing with latitude tilt": 1163 kWh per kWp per year.
 /// <https://ftp.maps.canada.ca/pub/nrcan_rncan/Solar-energy_Energie-solaire/photovoltaic_canada_photovoltaique/municip_potentiel-potential.csv>
 pub const TORONTO_PV_KWH_PER_KWP_YR: f64 = 1163.0;
 
-/// Same NRCan dataset, `municip_kWh.csv`, Ontario/Toronto, Annual,
+/// Same `NRCan` dataset, `municip_kWh.csv`, Ontario/Toronto, Annual,
 /// latitude tilt: mean daily global insolation 4.25 kWh/m2/day
 /// (equivalently 4.25 peak-sun-hours per day).
 pub const TORONTO_PSH_LAT_TILT: f64 = 4.25;
+
+/// Same `NRCan` `municip_potentiel-potential.csv`, Ontario/Toronto, December,
+/// latitude tilt: 51 kWh per kWp for the month.
+pub const TORONTO_PV_DEC_KWH_PER_KWP: f64 = 51.0;
+
+/// Date the Kent.ca prices below were read.
+pub const PRICES_ACCESSED: &str = "2026-10-18";
 
 /// OEB Regulated Price Plan, Tiered, Tier 1 price effective 2025-11-01:
 /// 12.0 cents/kWh (commodity line only; excludes delivery, regulatory, HST).
@@ -48,7 +63,7 @@ pub const PRICE_STUD_2X6X8_CAD: f64 = 6.68;
 pub const PRICE_OSB_7_16_CAD: f64 = 16.23;
 /// Kent.ca, "Drywall 1/2\" x 4' x 8' Ultra Light Panel", SKU 1016148: CA$18.17 (accessed 2026-10-18).
 pub const PRICE_DRYWALL_1_2_CAD: f64 = 18.17;
-/// Kent.ca, "ComfortBatt Woodstd R22 5.5\" x 23\" x 47\" - 37.5 SqFt", SKU 1021667: CA$152.53 (accessed 2026-10-18).
+/// Kent.ca, "`ComfortBatt` Woodstd R22 5.5\" x 23\" x 47\" - 37.5 `SqFt`", SKU 1021667: CA$152.53 (accessed 2026-10-18).
 pub const PRICE_R22_BAG_CAD: f64 = 152.53;
 /// Coverage of one R22 23-inch bag (Kent.ca SKU 1021667 title): 37.5 sq ft.
 pub const R22_BAG_SQFT: f64 = 37.5;
@@ -62,7 +77,7 @@ pub const PANEL_SQFT: f64 = 32.0;
 pub const ONTARIO_CARPENTER_MEDIAN_CAD_PER_H: f64 = 32.00;
 
 /// Canadian Wood Council, EPD 845 (2025-02-04), Table 7, softwood lumber
-/// produced in Ontario, GWP total A1-A3: 54.6 kg CO2e per m3.
+/// produced in Ontario, GWP total A1-A3: 54.6 kg `CO2e` per m3.
 /// <https://cwc.ca/publication/a-regionalized-industry-average-epd-for-canadian-softwood-lumber/>
 pub const ONTARIO_LUMBER_GWP_A1_A3_KG_PER_M3: f64 = 54.6;
 
@@ -73,9 +88,11 @@ pub const CMHC_STARTS_NEEDED_PER_YR: f64 = 477_840.0;
 /// CMHC, same Figure 13: business-as-usual 245,000 starts/year.
 pub const CMHC_STARTS_BAU_PER_YR: f64 = 245_000.0;
 
+/// Length of one purchased 2x6 piece (Kent.ca SKU 1016278 "2 x 6 x 8'"), ft.
+pub const LUMBER_LENGTH_FT: f64 = 8.0;
 /// 2x6 actual dressed size 1.5 in x 5.5 in (Home Depot Canada product
-/// 1001802970 lists width 5.5 in, height 1.5 in), length 96 in.
-pub const STUD_VOLUME_IN3: f64 = 1.5 * 5.5 * 96.0;
+/// 1001802970 lists width 5.5 in, height 1.5 in), times the piece length.
+pub const STUD_VOLUME_IN3: f64 = 1.5 * 5.5 * LUMBER_LENGTH_FT * 12.0;
 /// Exact conversion: 1 in = 0.0254 m.
 pub const M3_PER_IN3: f64 = 0.0254 * 0.0254 * 0.0254;
 
@@ -127,7 +144,7 @@ fn positive(name: &'static str, value: f64) -> Result<f64, ModelError> {
 pub struct PvEnergy {
     /// Array size in kWp.
     pub kwp: f64,
-    /// Performance ratio implied by NRCan's own two tables (PV potential / insolation).
+    /// Performance ratio implied by `NRCan`'s own two tables (PV potential / insolation).
     pub performance_ratio: f64,
     /// Annual energy, kWh.
     pub annual_kwh: f64,
@@ -139,7 +156,7 @@ pub struct PvEnergy {
     pub cash_revenue_cad_per_yr: f64,
 }
 
-/// Performance ratio implied by NRCan: `1163 / (4.25 x 365)`.
+/// Performance ratio implied by `NRCan`: `1163 / (4.25 x 365)`.
 #[must_use]
 pub fn implied_performance_ratio() -> f64 {
     TORONTO_PV_KWH_PER_KWP_YR / (TORONTO_PSH_LAT_TILT * 365.0)
@@ -236,6 +253,13 @@ fn ceil_u32(x: f64) -> u32 {
     n
 }
 
+/// Take-off rule: studs added at the end of each wall run.
+pub const END_STUDS_PER_WALL: u32 = 1;
+/// Take-off rule: extra studs per corner.
+pub const STUDS_PER_CORNER: u32 = 2;
+/// Take-off rule: plate runs per wall length (double top plate, single bottom).
+pub const PLATE_RUNS: f64 = 3.0;
+
 /// Take-off rules (all stated in the paper, section 10.1):
 /// studs per wall = ceil(L x 12 / spacing) + 1; +2 per corner (4 corners);
 /// plates = 3 x perimeter (double top, single bottom) cut from 8 ft pieces;
@@ -249,11 +273,11 @@ pub fn shell_bom(fp: Footprint) -> Result<ShellBom, ModelError> {
     let w = positive("width_ft", fp.width_ft)?;
     let h = positive("wall_height_ft", fp.wall_height_ft)?;
     let s = positive("stud_spacing_in", fp.stud_spacing_in)?;
-    let per_wall = |len: f64| ceil_u32(len * 12.0 / s) + 1;
+    let per_wall = |len: f64| ceil_u32(len * 12.0 / s) + END_STUDS_PER_WALL;
     let field_studs = 2 * per_wall(l) + 2 * per_wall(w);
-    let corner_studs = 2 * 4;
+    let corner_studs = STUDS_PER_CORNER * 4;
     let perimeter = 2.0 * (l + w);
-    let plate_pieces = ceil_u32(3.0 * perimeter / 8.0);
+    let plate_pieces = ceil_u32(PLATE_RUNS * perimeter / LUMBER_LENGTH_FT);
     let stud_pieces = field_studs + corner_studs + plate_pieces;
     let floor = l * w;
     let wall = perimeter * h;
@@ -296,7 +320,7 @@ impl ShellBom {
         self.lines.iter().map(BomLine::total).sum()
     }
 
-    /// Fossil A1-A3 carbon of the lumber only, kg CO2e (CWC EPD 845, Ontario).
+    /// Fossil A1-A3 carbon of the lumber only, kg `CO2e` (CWC EPD 845, Ontario).
     #[must_use]
     pub fn lumber_gwp_kg(&self) -> f64 {
         f64::from(self.stud_pieces)
@@ -315,133 +339,390 @@ pub fn labour_cad(hours: f64) -> Result<f64, ModelError> {
 }
 
 // ---------------------------------------------------------------------------
-// Rendering (the paper embeds this output verbatim)
+// Scenario parameters (not sourced facts; each is named in the paper)
 // ---------------------------------------------------------------------------
 
-/// Start marker of the generated block inside the paper and README.
+/// Array sizes evaluated: 5 kWp (reference) and 10 kWp (Ashlynn's v1.0 upper bound).
+pub const ARRAY_KWP: [f64; 2] = [5.0, 10.0];
+/// Unit-cost target range, CAD (Ashlynn's v1.0 target; unverified).
+pub const UNIT_COST_CAD: [f64; 2] = [50_000.0, 80_000.0];
+/// ROI horizons, years (Ashlynn's v1.0 "5-7 year ROI").
+pub const ROI_YEARS: [f64; 2] = [5.0, 7.0];
+/// Labour sensitivity points, hours (no source; not an estimate).
+pub const LABOUR_HOURS: [f64; 3] = [100.0, 200.0, 400.0];
+/// Factory output, units/yr (Ashlynn's v1.0 figures).
+pub const FACTORY_UNITS_PER_YR: [f64; 2] = [1_000.0, 2_000.0];
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+
+/// Start marker of the generated block inside the paper.
 pub const BEGIN: &str = "<!-- BEGIN GENERATED BY choam-model (cargo run -q -p choam-model) -->";
 /// End marker of the generated block.
 pub const END: &str = "<!-- END GENERATED -->";
 
-/// Render the model block embedded in the paper.
-///
-/// # Errors
-/// Propagates [`ModelError`] (cannot occur for the built-in reference inputs).
-pub fn render_paper_block() -> Result<String, ModelError> {
-    let mut o = String::new();
+/// Template of `CHOAM-Idea_Draft.md`.
+pub const PAPER_TEMPLATE: &str = include_str!("../templates/CHOAM-Idea_Draft.md");
+/// Template of `README.md`.
+pub const README_TEMPLATE: &str = include_str!("../templates/README.md");
+/// Template of `CLAIMS.md`.
+pub const CLAIMS_TEMPLATE: &str = include_str!("../templates/CLAIMS.md");
+/// Allowlist of numbers in the templates that are not model output.
+pub const ALLOWLIST: &str = include_str!("../numbers-allowlist.tsv");
+
+/// Error from rendering: either the model or the template failed.
+#[derive(Debug, Clone, PartialEq)]
+pub enum RenderError {
+    /// A model calculation rejected its input.
+    Model(ModelError),
+    /// A template is malformed or names an unknown key.
+    Doc(DocError),
+}
+
+impl fmt::Display for RenderError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            RenderError::Model(e) => write!(f, "model: {e}"),
+            RenderError::Doc(e) => write!(f, "template: {e}"),
+        }
+    }
+}
+
+impl std::error::Error for RenderError {}
+
+impl From<ModelError> for RenderError {
+    fn from(e: ModelError) -> Self {
+        RenderError::Model(e)
+    }
+}
+
+impl From<DocError> for RenderError {
+    fn from(e: DocError) -> Self {
+        RenderError::Doc(e)
+    }
+}
+
+struct Rows(String);
+
+impl Rows {
+    fn row(&mut self, id: &str, quantity: &str, value: &str, chain: &str) {
+        for part in [
+            "| ", id, " | ", quantity, " | ", value, " | ", chain, " |\n",
+        ] {
+            self.0.push_str(part);
+        }
+    }
+}
+
+fn energy_rows(o: &mut Rows) -> Result<(), ModelError> {
     let pr = implied_performance_ratio();
-    let pv5 = pv_energy(5.0)?;
-    let pv10 = pv_energy(10.0)?;
+    let tariff = ONTARIO_RPP_TIER1_CAD_PER_KWH;
+    o.row(
+        "E1",
+        "Implied performance ratio (NRCan)",
+        &format!("{pr:.4}"),
+        &format!("{TORONTO_PV_KWH_PER_KWP_YR:.0} / ({TORONTO_PSH_LAT_TILT} x 365)"),
+    );
+    for (id, kwp) in ["E2", "E3"].into_iter().zip(ARRAY_KWP) {
+        let pv = pv_energy(kwp)?;
+        o.row(
+            id,
+            &format!("{kwp:.0} kWp annual yield, Toronto"),
+            &format!("{:.0} kWh/yr", pv.annual_kwh),
+            &format!("{kwp:.0} x {TORONTO_PSH_LAT_TILT} x 365 x {pr:.4}"),
+        );
+        o.row(
+            &format!("{id}a"),
+            &format!("{kwp:.0} kWp mean daily yield"),
+            &format!("{:.2} kWh/day", pv.daily_kwh),
+            "annual / 365",
+        );
+        o.row(
+            &format!("{id}b"),
+            &format!(
+                "{kwp:.0} kWp bill offset at Tier 1, upper bound (every kWh offsets consumption)"
+            ),
+            &format!("${:.2}/yr", pv.bill_offset_cad_per_yr),
+            &format!("annual x ${tariff:.3}"),
+        );
+        o.row(
+            &format!("{id}c"),
+            &format!("{kwp:.0} kWp cash revenue (net metering)"),
+            &format!("${:.2}/yr", pv.cash_revenue_cad_per_yr),
+            "O. Reg. 541/05: credits only",
+        );
+    }
+    let offset = pv_energy(ARRAY_KWP[0])?.bill_offset_cad_per_yr;
+    for (id, cap) in ["E4", "E5"].into_iter().zip(UNIT_COST_CAD) {
+        o.row(
+            id,
+            &format!(
+                "Energy-only payback on a ${cap:.0} unit ({:.0} kWp), lower bound",
+                ARRAY_KWP[0]
+            ),
+            &format!("{:.1} yr", payback_years(cap, offset)?),
+            &format!("{cap:.0} / {offset:.2}"),
+        );
+    }
+    for (id, yrs) in ["E6", "E7"].into_iter().zip(ROI_YEARS) {
+        o.row(
+            id,
+            &format!(
+                "Max unit cost for a {yrs:.0}-yr energy-only ROI ({:.0} kWp), upper bound",
+                ARRAY_KWP[0]
+            ),
+            &format!("${:.2}", yrs * offset),
+            &format!("{yrs:.0} x {offset:.2}"),
+        );
+    }
+    Ok(())
+}
+
+fn bom_rows(o: &mut Rows) -> Result<(), ModelError> {
     let bom = shell_bom(REFERENCE_UNIT)?;
     let mat = bom.material_cad();
-    let w = |o: &mut String, s: String| {
-        o.push_str(&s);
-        o.push('\n');
-    };
-    w(&mut o, BEGIN.to_string());
-    w(&mut o, "| ID | Quantity | Value | Chain |".into());
-    w(&mut o, "| --- | --- | ---: | --- |".into());
-    w(
-        &mut o,
-        format!("| E1 | Implied performance ratio (NRCan) | {pr:.4} | 1163 / (4.25 x 365) |"),
-    );
-    for (id, pv) in [("E2", pv5), ("E3", pv10)] {
-        w(&mut o, format!("| {id} | {:.0} kWp annual yield, Toronto | {:.0} kWh/yr | {:.0} x 4.25 x 365 x {pr:.4} |", pv.kwp, pv.annual_kwh, pv.kwp));
-        w(
-            &mut o,
-            format!(
-                "| {id}a | {:.0} kWp mean daily yield | {:.2} kWh/day | annual / 365 |",
-                pv.kwp, pv.daily_kwh
-            ),
-        );
-        w(
-            &mut o,
-            format!(
-                "| {id}b | {:.0} kWp bill offset at Tier 1 | ${:.2}/yr | annual x $0.120 |",
-                pv.kwp, pv.bill_offset_cad_per_yr
-            ),
-        );
-        w(&mut o, format!("| {id}c | {:.0} kWp cash revenue (net metering) | ${:.2}/yr | O. Reg. 541/05: credits only |", pv.kwp, pv.cash_revenue_cad_per_yr));
-    }
-    for (id, cap) in [("E4", 50_000.0), ("E5", 80_000.0)] {
-        w(&mut o, format!("| {id} | Energy-only payback on a ${cap:.0} unit (5 kWp) | {:.1} yr | {cap:.0} / {:.2} |", payback_years(cap, pv5.bill_offset_cad_per_yr)?, pv5.bill_offset_cad_per_yr));
-    }
-    for (id, yrs) in [("E6", 5.0), ("E7", 7.0)] {
-        w(&mut o, format!("| {id} | Max unit cost for a {yrs:.0}-yr energy-only ROI (5 kWp) | ${:.2} | {yrs:.0} x {:.2} |", yrs * pv5.bill_offset_cad_per_yr, pv5.bill_offset_cad_per_yr));
-    }
+    let offset = pv_energy(ARRAY_KWP[0])?.bill_offset_cad_per_yr;
     for (i, l) in bom.lines.iter().enumerate() {
-        w(
-            &mut o,
-            format!(
-                "| B{} | {} | {} x ${:.2} = ${:.2} | Kent.ca 2026-10-18 |",
-                i + 1,
-                l.item,
-                l.qty,
-                l.unit_cad,
-                l.total()
-            ),
+        o.row(
+            &format!("B{}", i + 1),
+            l.item,
+            &format!("{} x ${:.2} = ${:.2}", l.qty, l.unit_cad, l.total()),
+            &format!("Kent.ca {PRICES_ACCESSED}"),
         );
     }
-    w(
-        &mut o,
-        format!("| B5 | Partial shell materials, 200 sq ft (pre-tax) | ${mat:.2} | sum B1-B4 |"),
-    );
-    w(
-        &mut o,
-        format!(
-            "| B6 | Partial shell materials per sq ft | ${:.2}/sq ft | B5 / {:.0} |",
-            mat / bom.floor_sqft,
+    o.row(
+        "B5",
+        &format!(
+            "Partial shell materials, {:.0} sq ft (pre-tax)",
             bom.floor_sqft
         ),
+        &format!("${mat:.2}"),
+        "sum B1-B4",
     );
-    for (id, h) in [("L1", 100.0), ("L2", 200.0), ("L3", 400.0)] {
-        w(&mut o, format!("| {id} | Labour at {h:.0} h (sensitivity point, not an estimate) | ${:.2} | {h:.0} x $32.00 |", labour_cad(h)?));
+    o.row(
+        "B6",
+        "Partial shell materials per sq ft",
+        &format!("${:.2}/sq ft", mat / bom.floor_sqft),
+        &format!("B5 / {:.0}", bom.floor_sqft),
+    );
+    let ceiling_long = ROI_YEARS[1] * offset;
+    let ceiling_short = ROI_YEARS[0] * offset;
+    let r22 = bom.lines[2].total();
+    o.row(
+        "B7",
+        "Partial shell (B5) minus 7-yr ceiling (E7)",
+        &format!("${:.2}", mat - ceiling_long),
+        &format!("{mat:.2} - {ceiling_long:.2}"),
+    );
+    o.row(
+        "B8",
+        "R22 line (B3) minus 5-yr ceiling (E6)",
+        &format!("${:.2}", r22 - ceiling_short),
+        &format!("{r22:.2} - {ceiling_short:.2}"),
+    );
+    for (id, h) in ["L1", "L2", "L3"].into_iter().zip(LABOUR_HOURS) {
+        o.row(
+            id,
+            &format!("Labour at {h:.0} h (sensitivity point, not an estimate)"),
+            &format!("${:.2}", labour_cad(h)?),
+            &format!("{h:.0} x ${ONTARIO_CARPENTER_MEDIAN_CAD_PER_H:.2}"),
+        );
     }
-    w(
-        &mut o,
-        format!(
-            "| C1 | Lumber embodied carbon A1-A3 | {:.1} kg CO2e | {} pcs x {:.5} m3 x 54.6 |",
-            bom.lumber_gwp_kg(),
+    o.row(
+        "C1",
+        "Lumber embodied carbon A1-A3",
+        &format!("{:.1} kg CO2e", bom.lumber_gwp_kg()),
+        &format!(
+            "{} pcs x {:.5} m3 x {ONTARIO_LUMBER_GWP_A1_A3_KG_PER_M3}",
             bom.stud_pieces,
             STUD_VOLUME_IN3 * M3_PER_IN3
         ),
     );
-    for (id, n) in [("S1", 1_000.0), ("S2", 2_000.0)] {
-        w(&mut o, format!("| {id} | Share of CMHC annual need from one factory at {n:.0} units/yr | {:.2}% | {n:.0} / 477,840 |", 100.0 * n / CMHC_STARTS_NEEDED_PER_YR));
-    }
-    w(
-        &mut o,
-        format!(
-            "| S3 | CMHC gap above business-as-usual | {:.0} starts/yr | 477,840 - 245,000 |",
-            CMHC_STARTS_NEEDED_PER_YR - CMHC_STARTS_BAU_PER_YR
-        ),
-    );
-    o.push_str(END);
-    Ok(o)
+    Ok(())
 }
 
-/// Key figures the README must quote verbatim (asserted by the test suite).
+fn scale_rows(o: &mut Rows) {
+    let needed = grouped(CMHC_STARTS_NEEDED_PER_YR, 0);
+    for (id, n) in ["S1", "S2"].into_iter().zip(FACTORY_UNITS_PER_YR) {
+        o.row(
+            id,
+            &format!("Share of CMHC annual need from one factory at {n:.0} units/yr"),
+            &format!("{:.2}%", 100.0 * n / CMHC_STARTS_NEEDED_PER_YR),
+            &format!("{n:.0} / {needed}"),
+        );
+    }
+    o.row(
+        "S3",
+        "CMHC gap above business-as-usual",
+        &format!(
+            "{:.0} starts/yr",
+            CMHC_STARTS_NEEDED_PER_YR - CMHC_STARTS_BAU_PER_YR
+        ),
+        &format!("{needed} - {}", grouped(CMHC_STARTS_BAU_PER_YR, 0)),
+    );
+}
+
+/// Render the model table embedded in the paper (markers included).
 ///
 /// # Errors
 /// Propagates [`ModelError`] (cannot occur for the built-in reference inputs).
-pub fn readme_facts() -> Result<Vec<String>, ModelError> {
-    let pv5 = pv_energy(5.0)?;
+pub fn render_paper_block() -> Result<String, ModelError> {
+    let mut o = Rows(String::new());
+    o.0.push_str(BEGIN);
+    o.0.push('\n');
+    o.0.push_str("| ID | Quantity | Value | Chain |\n| --- | --- | ---: | --- |\n");
+    energy_rows(&mut o)?;
+    bom_rows(&mut o)?;
+    scale_rows(&mut o);
+    o.0.push_str(END);
+    Ok(o.0)
+}
+
+fn input(key: &'static str, text: String) -> Value {
+    Value {
+        key,
+        text,
+        derived: false,
+    }
+}
+
+fn derived(key: &'static str, text: String) -> Value {
+    Value {
+        key,
+        text,
+        derived: true,
+    }
+}
+
+/// Every value a template may reference, keyed by name.
+///
+/// # Errors
+/// Propagates [`ModelError`] (cannot occur for the built-in reference inputs).
+pub fn values() -> Result<Vec<Value>, ModelError> {
+    let pv5 = pv_energy(ARRAY_KWP[0])?;
+    let pv10 = pv_energy(ARRAY_KWP[1])?;
     let bom = shell_bom(REFERENCE_UNIT)?;
+    let mat = bom.material_cad();
+    let off = pv5.bill_offset_cad_per_yr;
+    let fp = REFERENCE_UNIT;
     Ok(vec![
-        format!("{:.0} kWh/yr", pv5.annual_kwh),
-        format!("${:.2}/yr", pv5.bill_offset_cad_per_yr),
-        format!(
-            "{:.1} yr",
-            payback_years(50_000.0, pv5.bill_offset_cad_per_yr)?
+        // Sourced inputs.
+        input("nrcan.kwh_per_kwp", grouped(TORONTO_PV_KWH_PER_KWP_YR, 0)),
+        input("nrcan.psh", format!("{TORONTO_PSH_LAT_TILT}")),
+        input("nrcan.dec", format!("{TORONTO_PV_DEC_KWH_PER_KWP:.0}")),
+        input(
+            "oeb.tier1_cents",
+            format!("{:.1}", ONTARIO_RPP_TIER1_CAD_PER_KWH * 100.0),
         ),
-        format!(
-            "{:.1} yr",
-            payback_years(80_000.0, pv5.bill_offset_cad_per_yr)?
+        input(
+            "jobbank.wage",
+            format!("{ONTARIO_CARPENTER_MEDIAN_CAD_PER_H:.2}"),
         ),
-        format!("${:.2}", 7.0 * pv5.bill_offset_cad_per_yr),
-        format!("${:.2}", bom.material_cad()),
-        format!("{:.2}%", 100.0 * 2_000.0 / CMHC_STARTS_NEEDED_PER_YR),
+        input("cwc.gwp", format!("{ONTARIO_LUMBER_GWP_A1_A3_KG_PER_M3}")),
+        input("cmhc.needed", grouped(CMHC_STARTS_NEEDED_PER_YR, 0)),
+        input("cmhc.bau", grouped(CMHC_STARTS_BAU_PER_YR, 0)),
+        input("kent.date", PRICES_ACCESSED.to_string()),
+        input("kent.r22", format!("{PRICE_R22_BAG_CAD:.2}")),
+        input("kent.stud", format!("{PRICE_STUD_2X6X8_CAD:.2}")),
+        input("kent.osb", format!("{PRICE_OSB_7_16_CAD:.2}")),
+        input("kent.drywall", format!("{PRICE_DRYWALL_1_2_CAD:.2}")),
+        input("kent.r22_sqft", format!("{R22_BAG_SQFT}")),
+        input("rule.end_studs", format!("{END_STUDS_PER_WALL}")),
+        input("rule.corner_studs", format!("{STUDS_PER_CORNER}")),
+        input("rule.plate_runs", format!("{PLATE_RUNS:.0}")),
+        // Scenario parameters.
+        input("unit.length_ft", format!("{:.0}", fp.length_ft)),
+        input("unit.width_ft", format!("{:.0}", fp.width_ft)),
+        input("unit.height_ft", format!("{:.0}", fp.wall_height_ft)),
+        input("unit.spacing_in", format!("{:.0}", fp.stud_spacing_in)),
+        input("unit.sqft", format!("{:.0}", bom.floor_sqft)),
+        derived(
+            "unit.height_m",
+            format!("{:.2}", fp.wall_height_ft * 0.3048),
+        ),
+        input("lumber.length_ft", format!("{LUMBER_LENGTH_FT:.0}")),
+        input("kwp.ref", format!("{:.0}", ARRAY_KWP[0])),
+        input("kwp.max", format!("{:.0}", ARRAY_KWP[1])),
+        input("cost.low", grouped(UNIT_COST_CAD[0], 0)),
+        input("cost.high", grouped(UNIT_COST_CAD[1], 0)),
+        input("cost.low_k", format!("{:.0}", UNIT_COST_CAD[0] / 1000.0)),
+        input("cost.high_k", format!("{:.0}", UNIT_COST_CAD[1] / 1000.0)),
+        input("roi.short", format!("{:.0}", ROI_YEARS[0])),
+        input("roi.long", format!("{:.0}", ROI_YEARS[1])),
+        input("factory.small", grouped(FACTORY_UNITS_PER_YR[0], 0)),
+        input("factory.large", grouped(FACTORY_UNITS_PER_YR[1], 0)),
+        // Derived.
+        derived("e1.pr", format!("{:.4}", implied_performance_ratio())),
+        derived("e2.annual", grouped(pv5.annual_kwh, 0)),
+        derived("e2.offset", grouped(off, 2)),
+        derived("e2.offset_whole", grouped(off, 0)),
+        derived("e2.cash", format!("{:.2}", pv5.cash_revenue_cad_per_yr)),
+        derived("e3.annual", grouped(pv10.annual_kwh, 0)),
+        derived(
+            "e4.payback",
+            format!("{:.1}", payback_years(UNIT_COST_CAD[0], off)?),
+        ),
+        derived(
+            "e5.payback",
+            format!("{:.1}", payback_years(UNIT_COST_CAD[1], off)?),
+        ),
+        derived("e6.ceiling", grouped(ROI_YEARS[0] * off, 2)),
+        derived("e7.ceiling", grouped(ROI_YEARS[1] * off, 2)),
+        derived("b3.r22", grouped(bom.lines[2].total(), 2)),
+        derived("b5.material", grouped(mat, 2)),
+        derived("b7.over", grouped(mat - ROI_YEARS[1] * off, 2)),
+        derived(
+            "s1.share",
+            format!(
+                "{:.2}",
+                100.0 * FACTORY_UNITS_PER_YR[0] / CMHC_STARTS_NEEDED_PER_YR
+            ),
+        ),
+        derived(
+            "s2.share",
+            format!(
+                "{:.2}",
+                100.0 * FACTORY_UNITS_PER_YR[1] / CMHC_STARTS_NEEDED_PER_YR
+            ),
+        ),
+        derived(
+            "s3.gap",
+            grouped(CMHC_STARTS_NEEDED_PER_YR - CMHC_STARTS_BAU_PER_YR, 0),
+        ),
     ])
+}
+
+fn render_doc(template: &str) -> Result<String, RenderError> {
+    Ok(docgen::render(
+        template,
+        &values()?,
+        &render_paper_block()?,
+    )?)
+}
+
+/// Render `CHOAM-Idea_Draft.md` from its template.
+///
+/// # Errors
+/// [`RenderError`] if the model or the template fails.
+pub fn render_paper() -> Result<String, RenderError> {
+    render_doc(PAPER_TEMPLATE)
+}
+
+/// Render `README.md` from its template.
+///
+/// # Errors
+/// [`RenderError`] if the model or the template fails.
+pub fn render_readme() -> Result<String, RenderError> {
+    render_doc(README_TEMPLATE)
+}
+
+/// Render `CLAIMS.md` from its template.
+///
+/// # Errors
+/// [`RenderError`] if the model or the template fails.
+pub fn render_claims() -> Result<String, RenderError> {
+    render_doc(CLAIMS_TEMPLATE)
 }
 
 /// Extract the generated block (markers included) from a markdown document.
