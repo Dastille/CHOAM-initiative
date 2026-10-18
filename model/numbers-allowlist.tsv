@@ -1,6 +1,6 @@
 # Numbers in model/templates/ that are NOT model output. Every other number in a template must be a
 # {{placeholder}} rendered by the model. Checked by tests/paper_sync.rs::every_template_number_is_generated_or_allowlisted.
-# A row covers every whole-token occurrence of `token` on any template line of `doc` that contains `context`.
+# A row covers exactly one occurrence: the token at the position where `context` (text on the same line, around the token) matches. A second copy of the token needs its own row.
 # kind: quote = direct quote of a cited source; author = Ashlynn's (or an earlier rewrite's) figure, quoted as such;
 #       id = identifier (standard, clause, regulation, section, SKU, version, row/list number, product label);
 #       date = date or year; unit = exact unit or calendar constant in a stated formula.
