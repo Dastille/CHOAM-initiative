@@ -29,6 +29,8 @@ pub enum DocError {
     Unclosed(usize),
     /// An allowlist row is malformed; the payload describes the row.
     BadAllowlist(String),
+    /// A claims row is malformed; the payload describes the row.
+    BadClaim(String),
 }
 
 impl fmt::Display for DocError {
@@ -37,6 +39,7 @@ impl fmt::Display for DocError {
             DocError::UnknownKey(k) => write!(f, "template references unknown key `{k}`"),
             DocError::Unclosed(at) => write!(f, "unclosed `{{{{` at byte {at}"),
             DocError::BadAllowlist(row) => write!(f, "malformed allowlist row: {row}"),
+            DocError::BadClaim(row) => write!(f, "malformed claims row: {row}"),
         }
     }
 }
@@ -66,13 +69,17 @@ pub fn grouped(x: f64, dp: usize) -> String {
     format!("{sign}{out}{frac}")
 }
 
-/// Replace every `{{key}}` in `template` with the matching value's text.
-/// `{{block}}` is replaced with `block`.
+/// Replace every `{{key}}` in `template` with the matching value's text, or
+/// with the matching named block (e.g. `{{block}}`, `{{claims_table}}`).
 ///
 /// # Errors
 /// [`DocError::UnknownKey`] or [`DocError::Unclosed`].
-pub fn render(template: &str, values: &[Value], block: &str) -> Result<String, DocError> {
-    let mut out = String::with_capacity(template.len() + block.len());
+pub fn render(
+    template: &str,
+    values: &[Value],
+    blocks: &[(&str, &str)],
+) -> Result<String, DocError> {
+    let mut out = String::with_capacity(template.len());
     let mut rest = template;
     let mut offset = 0;
     while let Some(start) = rest.find("{{") {
@@ -80,8 +87,8 @@ pub fn render(template: &str, values: &[Value], block: &str) -> Result<String, D
         let after = &rest[start + 2..];
         let end = after.find("}}").ok_or(DocError::Unclosed(offset + start))?;
         let key = after[..end].trim();
-        if key == "block" {
-            out.push_str(block);
+        if let Some((_, b)) = blocks.iter().find(|(k, _)| *k == key) {
+            out.push_str(b);
         } else {
             let v = values
                 .iter()
@@ -97,6 +104,54 @@ pub fn render(template: &str, values: &[Value], block: &str) -> Result<String, D
     Ok(out)
 }
 
+/// The result of comparing two model quantities at a printed precision.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Cmp {
+    /// The first quantity is larger.
+    Above,
+    /// Both round to the same printed value.
+    Equal,
+    /// The first quantity is smaller.
+    Below,
+}
+
+impl Cmp {
+    /// Compare `a` with `b` after rounding both to `dp` decimals, so the word
+    /// always agrees with the printed numbers.
+    #[must_use]
+    pub fn of(a: f64, b: f64, dp: usize) -> Cmp {
+        let (x, y) = (format!("{a:.dp$}"), format!("{b:.dp$}"));
+        let (x, y): (f64, f64) = (x.parse().unwrap_or(a), y.parse().unwrap_or(b));
+        if x > y {
+            Cmp::Above
+        } else if x < y {
+            Cmp::Below
+        } else {
+            Cmp::Equal
+        }
+    }
+
+    /// Verb for a singular subject: `exceeds`, `equals` or `is below`.
+    #[must_use]
+    pub fn exceeds(self) -> &'static str {
+        match self {
+            Cmp::Above => "exceeds",
+            Cmp::Equal => "equals",
+            Cmp::Below => "is below",
+        }
+    }
+
+    /// Verb for a plural subject: `exceed`, `equal` or `are below`.
+    #[must_use]
+    pub fn exceed(self) -> &'static str {
+        match self {
+            Cmp::Above => "exceed",
+            Cmp::Equal => "equal",
+            Cmp::Below => "are below",
+        }
+    }
+}
+
 /// One numeric token found in a template line.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NumToken {
@@ -104,6 +159,8 @@ pub struct NumToken {
     pub line: usize,
     /// The token, digits with internal `,` or `.` (e.g. `4,884.60`).
     pub token: String,
+    /// Byte offset of the token in `text`.
+    pub at: usize,
     /// The template line with placeholders and URLs blanked.
     pub text: String,
 }
@@ -153,9 +210,11 @@ pub fn numeric_tokens(template: &str) -> Vec<NumToken> {
                 {
                     k += 1;
                 }
+                let at = chars[..j].iter().map(|c| c.len_utf8()).sum();
                 found.push(NumToken {
                     line: i + 1,
                     token: chars[j..k].iter().collect(),
+                    at,
                     text: text.clone(),
                 });
                 j = k;
@@ -287,6 +346,21 @@ impl LintReport {
     }
 }
 
+/// `true` if some occurrence of `context` in `text` spans the token at byte
+/// `at` (length `len`): the allowlist row locates *this* token, not merely a
+/// line that happens to contain the same digits elsewhere.
+fn context_covers(text: &str, context: &str, at: usize, len: usize) -> bool {
+    let mut from = 0;
+    while let Some(p) = text[from..].find(context) {
+        let a = from + p;
+        if a <= at && at + len <= a + context.len() {
+            return true;
+        }
+        from = a + text[a..].chars().next().map_or(1, char::len_utf8);
+    }
+    false
+}
+
 fn digits_only(s: &str) -> String {
     s.chars()
         .filter(|c| c.is_ascii_digit() || *c == '.')
@@ -303,17 +377,15 @@ pub fn lint(doc: &str, template: &str, allow: &[Allow], values: &[Value]) -> Lin
     for t in numeric_tokens(template) {
         let mut covered = false;
         for (i, a) in rows.iter().enumerate() {
-            if a.token == t.token && t.text.contains(&a.context) {
+            if a.token == t.token && context_covers(&t.text, &a.context, t.at, t.token.len()) {
                 used[i] = true;
                 covered = true;
             }
         }
         if !covered {
             report.unlisted.push(format!(
-                "{doc}:{}: `{}` in: {}",
-                t.line,
-                t.token,
-                t.text.trim()
+                "{doc}:{}: `{}` at byte {} in: {}",
+                t.line, t.token, t.at, t.text
             ));
         }
     }
@@ -336,4 +408,187 @@ pub fn lint(doc: &str, template: &str, allow: &[Allow], values: &[Value]) -> Lin
         }
     }
     report
+}
+
+/// The status of one claim in `CLAIMS.md`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Status {
+    /// Checked against the cited primary source; an excerpt is committed.
+    Verified,
+    /// Part of the claim is in the source, part is not.
+    PartlyVerified,
+    /// Computed by `model/` from sourced inputs.
+    Derived,
+    /// Read through a reproduction or secondary copy only.
+    Secondary,
+    /// No source found.
+    Unverified,
+    /// The evidence disagrees with the claim.
+    Contradicted,
+    /// Removed from the documents.
+    Deleted,
+    /// A reading of a source that needs a professional opinion.
+    Unresolved,
+}
+
+impl Status {
+    /// Parse the status word used in `claims.tsv`.
+    #[must_use]
+    pub fn parse(word: &str) -> Option<Status> {
+        Some(match word {
+            "verified" => Status::Verified,
+            "partly verified" => Status::PartlyVerified,
+            "derived" => Status::Derived,
+            "secondary" => Status::Secondary,
+            "unverified" => Status::Unverified,
+            "contradicted" => Status::Contradicted,
+            "deleted" => Status::Deleted,
+            "unresolved" => Status::Unresolved,
+            _ => return None,
+        })
+    }
+
+    /// The word printed in `CLAIMS.md`.
+    #[must_use]
+    pub fn word(self) -> &'static str {
+        match self {
+            Status::Verified => "verified",
+            Status::PartlyVerified => "partly verified",
+            Status::Derived => "derived",
+            Status::Secondary => "secondary",
+            Status::Unverified => "unverified",
+            Status::Contradicted => "contradicted",
+            Status::Deleted => "deleted",
+            Status::Unresolved => "unresolved",
+        }
+    }
+}
+
+/// One rendered claim: every field has had its `{{key}}` placeholders filled.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Claim {
+    /// Row number shown in the table (1-based position in the file).
+    pub id: String,
+    /// The claim text.
+    pub claim: String,
+    /// Source (URL and locator) or calculation.
+    pub source: String,
+    /// Status, parsed from the first `;`-separated part of the status field.
+    pub status: Status,
+    /// Optional qualifier printed in parentheses after the status.
+    pub note: String,
+    /// File names under `model/sources/` (empty if no excerpt is committed).
+    pub evidence: Vec<String>,
+    /// Strings that must appear verbatim (modulo whitespace) in the excerpt.
+    pub needles: Vec<String>,
+}
+
+/// Parse and render `claims.tsv`:
+/// `claim<TAB>source<TAB>status<TAB>evidence<TAB>needles`. Rows are numbered
+/// from 1 in file order.
+/// `status` is `word` or `word; note` (and may itself be a placeholder, so a
+/// status can be computed from model values). `evidence` is a file name or
+/// `-`. `evidence` may list several files joined by ` + `. `needles` are separated
+/// by ` || `. Lines starting with `#` and blank
+/// lines are skipped.
+///
+/// # Errors
+/// [`DocError::BadClaim`] for a malformed row or unknown status word, and
+/// render errors for unknown placeholders.
+pub fn parse_claims(tsv: &str, values: &[Value]) -> Result<Vec<Claim>, DocError> {
+    let mut out = Vec::new();
+    for line in tsv.lines() {
+        if line.trim().is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let f: Vec<&str> = line.split('\t').collect();
+        if f.len() != 5 {
+            return Err(DocError::BadClaim(line.to_string()));
+        }
+        let r = |x: &str| render(x, values, &[]);
+        let status_text = r(f[2])?;
+        let (word, note) = match status_text.split_once(';') {
+            Some((w, n)) => (w.trim(), n.trim().to_string()),
+            None => (status_text.trim(), String::new()),
+        };
+        let status = Status::parse(word).ok_or_else(|| DocError::BadClaim(line.to_string()))?;
+        let evidence: Vec<String> = match f[3].trim() {
+            "-" | "" => Vec::new(),
+            e => e.split(" + ").map(|x| x.trim().to_string()).collect(),
+        };
+        let needles = if f[4].trim().is_empty() || f[4].trim() == "-" {
+            Vec::new()
+        } else {
+            f[4].split(" || ")
+                .map(|n| r(n.trim()))
+                .collect::<Result<Vec<_>, _>>()?
+        };
+        out.push(Claim {
+            id: (out.len() + 1).to_string(),
+            claim: r(f[0])?,
+            source: r(f[1])?,
+            status,
+            note,
+            evidence,
+            needles,
+        });
+    }
+    Ok(out)
+}
+
+/// Render claims as the markdown table used in `CLAIMS.md`.
+#[must_use]
+pub fn claims_table(claims: &[Claim]) -> String {
+    let mut s = String::from("| # | Claim | Source (URL + locator) or calculation | Status |\n| --- | --- | --- | --- |\n");
+    for c in claims {
+        for part in [
+            "| ",
+            &c.id,
+            " | ",
+            &c.claim,
+            " | ",
+            &c.source,
+            " | ",
+            c.status.word(),
+        ] {
+            s.push_str(part);
+        }
+        if !c.note.is_empty() {
+            s.push_str(" (");
+            s.push_str(&c.note);
+            s.push(')');
+        }
+        s.push_str(" |\n");
+    }
+    s
+}
+
+/// Split a committed source excerpt into its header and verbatim body.
+/// The header must carry `# Source:`, `# URL:`, `# Accessed:` and `# Method:`
+/// lines and end with a `---` line.
+///
+/// # Errors
+/// A description of the missing part.
+pub fn excerpt_body(text: &str) -> Result<&str, String> {
+    let Some(cut) = text.find("\n---\n") else {
+        return Err("no `---` line after the header".into());
+    };
+    let header = &text[..cut];
+    for field in ["# Source:", "# URL:", "# Accessed:", "# Method:"] {
+        if !header.lines().any(|l| l.starts_with(field)) {
+            return Err(format!("header lacks `{field}`"));
+        }
+    }
+    Ok(&text[cut + 5..])
+}
+
+fn squash(s: &str) -> String {
+    s.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+/// `true` if `needle` occurs in `body`, comparing runs of whitespace as one
+/// space (page extraction does not preserve layout whitespace).
+#[must_use]
+pub fn excerpt_contains(body: &str, needle: &str) -> bool {
+    !needle.trim().is_empty() && squash(body).contains(&squash(needle))
 }

@@ -3,7 +3,7 @@
 use choam_model::docgen::{lint, parse_allowlist};
 use choam_model::{
     extract_block, render_claims, render_paper, render_paper_block, render_readme, values,
-    ALLOWLIST, CLAIMS_TEMPLATE, PAPER_TEMPLATE, README_TEMPLATE,
+    ALLOWLIST, CLAIMS_DATA, CLAIMS_TEMPLATE, PAPER_TEMPLATE, README_TEMPLATE,
 };
 
 const PAPER: &str = include_str!("../../CHOAM-Idea_Draft.md");
@@ -69,6 +69,7 @@ fn every_template_number_is_generated_or_allowlisted() {
         ("paper", PAPER_TEMPLATE),
         ("readme", README_TEMPLATE),
         ("claims", CLAIMS_TEMPLATE),
+        ("claims.tsv", CLAIMS_DATA),
     ] {
         let r = lint(doc, t, &allow, &vals);
         problems.extend(

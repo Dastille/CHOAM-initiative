@@ -1,0 +1,13 @@
+# Source: Kent.ca product page, SKU 1021667
+# URL: https://kent.ca/en/comfortbatt-woodstd-r22-5-5-x-23-x-47-37-5-sqft-1021667
+# Accessed: 2026-10-18 03:00-03:03 America/New_York (EDT)
+# Method: WebFetch text extraction of the public product page
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+ComfortBatt Woodstd R22 5.5" x 23" x 47" - 37.5 SqFt - Kent.ca
+[...]
+ $152.53
+[...]
+- Batts compress or expand between frame studs or joists for complete fill
+[...]
+ SKU # 1021667

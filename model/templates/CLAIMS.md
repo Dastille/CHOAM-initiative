@@ -7,48 +7,17 @@ Statuses:
 - **secondary**: the primary page could not be fetched from the audit box, so the value was read through a search-index copy or another publisher's reproduction.
 - **unverified**: no source found; kept only as a stated goal.
 - **contradicted**: evidence disagrees.
+- **partly verified**: part of the claim is in the source and part is not.
+- **unresolved**: a reading of a source that needs a professional opinion.
 - **deleted**: removed for lack of a source (listed so that nothing is dropped silently).
+
+This table is generated from `model/claims.tsv`. Every **verified** or **partly verified** row names a committed verbatim excerpt in `model/sources/` (with URL, access time and method), and `cargo test` (`tests/sources.rs`) fails unless each listed value, rendered from the model's constants, appears in that excerpt. A comparison or verdict that depends on model values (for example the v1.0 ROI row) is computed by the model.
 
 All accesses were on 2026-10-18 (America/New_York).
 
-| # | Claim | Source (URL + locator) or calculation | Status |
-| --- | --- | --- | --- |
-| 1 | Canada needs 430k–480k starts/yr to 2035; {{cmhc.needed}} central; BAU {{cmhc.bau}} | CMHC 2025, Figures 12–13 https://www.cmhc-schl.gc.ca/professionals/housing-markets-data-and-research/housing-research/research-reports/accelerate-supply/canadas-housing-supply-shortages-a-new-framework | verified |
-| 2 | Adequate housing declared a human right (federal policy) | National Housing Strategy Act s.4 https://laws-lois.justice.gc.ca/eng/acts/N-11.2/section-4.html | verified |
-| 3 | UBS = 7 services incl. shelter, free at point of need | UCL IGP 2017, "What are Universal Basic Services?" https://discovery.ucl.ac.uk/id/eprint/10080175/ | verified |
-| 4 | Toronto PV potential {{nrcan.kwh_per_kwp}} kWh/kWp/yr (latitude tilt); December {{nrcan.dec}} kWh/kWp | NRCan municip_potentiel-potential.csv, row Ontario/Toronto, Annual and December | verified |
-| 5 | Toronto insolation {{nrcan.psh}} kWh/m²/day (latitude tilt), December 2.21 | NRCan municip_kWh.csv, row Ontario/Toronto | verified |
-| 6 | PR {{e1.pr}}; {{kwp.ref}} kWp → {{e2.annual}} kWh/yr; {{kwp.max}} kWp → {{e3.annual}} | `model`: kWp × PSH × 365 × PR (E1–E3) | derived |
-| 7 | Ontario RPP Tier 1 = {{oeb.tier1_cents}} ¢/kWh (from 2025-11-01) | OEB electricity rates, "Tiered" table https://oeb.ca/consumer-information-and-protection/electricity-rates | verified |
-| 8 | {{kwp.ref}} kWp bill offset ${{e2.offset}}/yr, upper bound (unit consumption unsourced) | `model` E2b = E2 × Tier 1 | derived (upper bound) |
-| 9 | Net metering pays credits, not cash; credits expire after 12 months | OEB net metering page, "How net metering works" + note on s.8(8) O. Reg. 541/05 https://oeb.ca/consumer-information-and-protection/net-metering | verified |
-| 10 | Energy-only payback at least {{e4.payback}} yr (${{cost.low_k}}k) / {{e5.payback}} yr (${{cost.high_k}}k) | `model` E4–E5 | derived (lower bound) |
-| 11 | v1.0 "5–7 yr ROI via revenue" | `model` E6–E7: a {{roi.short}}–{{roi.long}} yr energy ROI requires unit cost ≤ ${{e6.ceiling}}–${{e7.ceiling}}; B5 = ${{b5.material}} already exceeds E7 (B7) | contradicted (energy); unverified (other revenue) |
-| 12 | Modular cuts schedules 20–50%; "more than 20 percent" construction-cost savings at scale | McKinsey 2019, "Potential for profound impact" https://www.mckinsey.com/capabilities/operations/our-insights/modular-construction-from-projects-to-products | verified |
-| 13 | Off-site cuts time 40–50%; saves "up to 20 percent on the cost of construction" (3–4 storey wood multifamily) | Terner Center 2017, "Cost Savings" and "Time Savings" https://ternercenter.berkeley.edu/wp-content/uploads/2020/08/offsite_construction.pdf | verified |
-| 14 | v1.0 "lower costs by 20–30%" | Items 12–13: "more than 20 percent" and "up to 20 percent"; neither quantifies 30% | partly verified |
-| 15 | 2D panels ship ~250 km for ~$8/m² vs ~$45/m² for 3D | McKinsey 2019 full report, section on 2D panels https://www.mckinsey.com/~/media/mckinsey/business%20functions/operations/our%20insights/modular%20construction%20from%20projects%20to%20products%20new/modular-construction-from-projects-to-products-full-report-new.pdf | verified |
-| 16 | ICC/MBI off-site standards are 1200-2021, 1205-2021, 1210-2023; "ICC 1220" does not exist | https://codes.iccsafe.org/content/ICCMBIOSCS2023P1 (title lists exactly these three) | verified |
-| 17 | NBC applies to factory-built buildings; CSA A277 is a certification procedure, not a code | CHBA https://www.chba.ca/code-compliance-for-modular-construction/ (quotes NBC Note A-1.1.1.1.(2)) | verified |
-| 18 | 2024 OBC (O. Reg. 163/24) adopts NBC 2020 with amendments, in force 2025-01-01 | https://www.ontario.ca/laws/regulation/r24163 (search-index synthesis of the regulation; regulation page itself not opened) | secondary |
-| 19 | NBC 2020 succeeded by NBC 2025 (2025-12-22) | NRC Publications Archive record https://nrc-publications.canada.ca/eng/view/object/?id=515340b5-f4e0-4798-be69-692e4ec423e8 | verified |
-| 20 | NBC 2020 Table 9.23.10.1, exterior wall supporting a roof only: 38 × 89 mm at 600 mm o.c., max 3.0 m; 38 × 140 mm at 600 mm listed only for roof plus one floor; NRC says the table "lacks clarity" for 38 × 140 mm under fewer floors | NRC Proposed Change 1677 (reproduces the NBC 2020 first-printing table as "existing provision") https://nrc.canada.ca/en/certifications-evaluations-standards/codes-canada/codes-development-process/public-review/2022/pcfs/nbc20_divb_09.23.10.01._table_001677.html ; NBC 2020 PDF refused from the audit box | secondary (NRC reproduction); 2×6 roof-only at 600 mm needs official confirmation |
-| 21 | Unit prices: 2×6×8 ${{kent.stud}}; 7/16 OSB ${{kent.osb}}; ½ drywall ${{kent.drywall}}; R22 {{kent.r22_sqft}} sq ft ${{kent.r22}} | Kent.ca SKUs 1016278, 1027497, 1016148, 1021667 (URLs in paper refs) | verified |
-| 22 | Partial shell take-off and total ${{b5.material}} | `model` B1–B5 (rules in paper §10.1) | derived |
-| 23 | Ontario carpenter median ${{jobbank.wage}}/h | Job Bank NOC 72310 Ontario https://www.jobbank.gc.ca/marketreport/wages-occupation/6388/ON | secondary (direct fetch refused) |
-| 24 | Labour hours for a {{unit.sqft}} sq ft unit | none found; L1–L3 are sensitivity points | unverified |
-| 25 | Ontario softwood lumber GWP A1–A3 = {{cwc.gwp}} kg CO₂e/m³ | CWC EPD 845, Table 7 | verified |
-| 26 | Lumber embodied carbon of the shell | `model` C1 | derived |
-| 27 | One {{factory.large}}/yr factory = {{s2.share}}% of annual need | `model` S2 | derived |
-| 28 | Blockchain can give tamper-evident procurement records but cannot stop off-chain bribery/collusion alone | WEF 2020 report, executive summary and "Key challenges and lessons" https://www3.weforum.org/docs/WEF_Blockchain_Government_Transparency_Report.pdf | verified |
-| 29 | BOINC / Folding@home are volunteer computing | https://boinc.berkeley.edu/ ; https://foldingathome.org/ | verified (homepages) |
-| 30 | Paid compute-partnership revenue per unit | none found | unverified |
-| 31 | Unit cost ${{cost.low_k}}k–{{cost.high_k}}k | partial BOM only | unverified |
-| 32 | $500–600/sq ft; $1–2B factories; 16 weeks/unit; $200–500/unit/yr; $1–3B solar; $1B compute; $10–20B savings; 36-inch clearances | none found | deleted (numbers); ideas kept as program lines |
-| 33 | v1.2 README BOM $65,200 (unit prices $160/sq ft, $2.70/W etc.) | unsourced, bot-authored | deleted; replaced by item 22 |
-
+{{claims_table}}
 ## Spot-checks (3 claims re-verified independently of the model)
 
 1. **Item 16, ICC 1220.** The ICC catalogue title is "2025 ICC / MBI Standards for Off-Site Construction 1200-2021, 1205-2021, 1210-2023" (fetched 2026-10-18). There is no 1220. **Pass**: the correction holds.
-2. **Item 4 / item 6, PV chain.** `grep "Ontario/Ontario,Toronto,Annual" municip_potentiel-potential.csv` → latitude tilt `1163`. `municip_kWh.csv` → `4.25`. Recomputing 1163/(4.25·365) and {{kwp.ref}}·1163 by hand reproduces rows E1 and E2 of the generated table to the printed precision. **Pass.**
+2. **Item 4 / item 6, PV chain.** `grep "Ontario/Ontario,Toronto,Annual" municip_potentiel-potential.csv` → latitude tilt `{{nrcan.kwh_per_kwp_raw}}`. `municip_kWh.csv` → `{{nrcan.psh}}`. Recomputing {{nrcan.kwh_per_kwp_raw}}/({{nrcan.psh}}·365) and {{kwp.ref}}·{{nrcan.kwh_per_kwp_raw}} by hand reproduces rows E1 and E2 of the generated table to the printed precision. **Pass.**
 3. **Item 9, net metering cash.** The OEB page states that utilities "give you a credit on your electricity bill" and that "credits can only be carried over to future bills for up to 12 months, after which credits are reduced to $0". **Pass**: row E2c (cash revenue) holds.

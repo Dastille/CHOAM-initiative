@@ -1,0 +1,11 @@
+# Source: McKinsey & Company (2019), Modular construction: From projects to products (article page)
+# URL: https://www.mckinsey.com/capabilities/operations/our-insights/modular-construction-from-projects-to-products
+# Accessed: 2026-10-18 03:01 America/New_York (EDT)
+# Method: WebFetch text extraction of the public page
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+June 18, 2019 | Report
+[...]
+recent modular projects have already established a solid track record of accelerating project timelines by 20 to 50 percent (Exhibit 1).
+
+The modular approach also has the potential to yield significant cost savings, although that is still more the exception than the norm today. As supply-chain players advance along the learning curve, we believe that leading real-estate players that are prepared to make the shift and optimize for scale can realize more than 20 percent in construction-cost savings,

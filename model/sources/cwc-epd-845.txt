@@ -1,0 +1,12 @@
+# Source: Canadian Wood Council, EPD for Canadian Softwood Lumber (EPD 845), Table 7
+# URL: https://cwc.ca/publication/a-regionalized-industry-average-epd-for-canadian-softwood-lumber/ (PDF linked from this page)
+# Accessed: 2026-10-18 (PDF retrieved 2026-10-18) America/New_York (EDT)
+# Method: curl of the PDF, pdftotext -layout
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+Declaration number           EPD 845
+[...]
+Table 7: LCA Results for 1 m3 softwood lumber produced in Ontario
+[...]
+ GWP Total        kg CO2 eq.       5.46E+01        -1.95E+03        4.02E+00   2.01E+03
+ GWP Fossil       kg CO2 eq.       5.46E+01         2.64E+01        4.02E+00   2.42E+01

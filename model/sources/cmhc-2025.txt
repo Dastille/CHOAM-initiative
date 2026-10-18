@@ -1,0 +1,17 @@
+# Source: CMHC, Canada's Housing Supply Shortages: Moving to a New Framework
+# URL: https://www.cmhc-schl.gc.ca/professionals/housing-markets-data-and-research/housing-research/research-reports/accelerate-supply/canadas-housing-supply-shortages-a-new-framework
+# Accessed: 2026-10-18 03:03 America/New_York (EDT)
+# Method: WebFetch text extraction of the public page
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+CMHC has been assessing how much housing is needed to restore affordability. We now estimate that housing starts must nearly double to around 430,000 to 480,000 units per year until 2035 to meet projected demand.
+[...]
+We estimate that housing starts averaging around 480,000 units annually over the next decade is required, compared to the 245,000 in our current projection (Figure 12 and Figure 13).
+[...]
+Canada, Projected Annual Housing Starts, 2025 to 2035
+
+| Region | Business-as-usual | Scenario with additional supply |
+| --- | --- | --- |
+| Canada | 245,000 | 477,840 |
+[...]
+Date Published: June 19, 2025

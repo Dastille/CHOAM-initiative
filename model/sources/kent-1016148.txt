@@ -1,0 +1,13 @@
+# Source: Kent.ca product page, SKU 1016148
+# URL: https://kent.ca/en/drywall-1-2-x-4-x-8-ultra-light-panel-1016148
+# Accessed: 2026-10-18 03:00-03:03 America/New_York (EDT)
+# Method: WebFetch text extraction of the public product page
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+Drywall 1/2" x 4' x 8' Ultra Light Panel - Kent.ca
+[...]
+ $18.17
+[...]
+- Dimensions are 1/2" x 4' x 8'
+[...]
+ SKU # 1016148

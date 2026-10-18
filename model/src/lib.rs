@@ -21,7 +21,7 @@
 
 pub mod docgen;
 
-use docgen::{grouped, DocError, Value};
+use docgen::{grouped, Claim, Cmp, DocError, Value};
 use std::fmt;
 
 // ---------------------------------------------------------------------------
@@ -370,6 +370,8 @@ pub const README_TEMPLATE: &str = include_str!("../templates/README.md");
 pub const CLAIMS_TEMPLATE: &str = include_str!("../templates/CLAIMS.md");
 /// Allowlist of numbers in the templates that are not model output.
 pub const ALLOWLIST: &str = include_str!("../numbers-allowlist.tsv");
+/// Claim rows rendered into `CLAIMS.md` (`model/claims.tsv`).
+pub const CLAIMS_DATA: &str = include_str!("../claims.tsv");
 
 /// Error from rendering: either the model or the template failed.
 #[derive(Debug, Clone, PartialEq)]
@@ -511,13 +513,16 @@ fn bom_rows(o: &mut Rows) -> Result<(), ModelError> {
     let r22 = bom.lines[2].total();
     o.row(
         "B7",
-        "Partial shell (B5) minus 7-yr ceiling (E7)",
+        &format!(
+            "Partial shell (B5) minus {:.0}-yr ceiling (E7)",
+            ROI_YEARS[1]
+        ),
         &format!("${:.2}", mat - ceiling_long),
         &format!("{mat:.2} - {ceiling_long:.2}"),
     );
     o.row(
         "B8",
-        "R22 line (B3) minus 5-yr ceiling (E6)",
+        &format!("R22 line (B3) minus {:.0}-yr ceiling (E6)", ROI_YEARS[0]),
         &format!("${:.2}", r22 - ceiling_short),
         &format!("{r22:.2} - {ceiling_short:.2}"),
     );
@@ -579,6 +584,19 @@ pub fn render_paper_block() -> Result<String, ModelError> {
     Ok(o.0)
 }
 
+/// Scientific notation as printed in EPD tables, e.g. `5.46E+01`.
+fn sci(value: f64) -> String {
+    let text = format!("{value:.2E}");
+    match text.split_once('E') {
+        Some((mantissa, exp)) => {
+            let power: i32 = exp.parse().unwrap_or(0);
+            let sign = if power < 0 { '-' } else { '+' };
+            format!("{mantissa}E{sign}{:02}", power.abs())
+        }
+        None => text,
+    }
+}
+
 fn input(key: &'static str, text: String) -> Value {
     Value {
         key,
@@ -606,7 +624,7 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
     let mat = bom.material_cad();
     let off = pv5.bill_offset_cad_per_yr;
     let fp = REFERENCE_UNIT;
-    Ok(vec![
+    let mut v = vec![
         // Sourced inputs.
         input("nrcan.kwh_per_kwp", grouped(TORONTO_PV_KWH_PER_KWP_YR, 0)),
         input("nrcan.psh", format!("{TORONTO_PSH_LAT_TILT}")),
@@ -620,6 +638,16 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
             format!("{ONTARIO_CARPENTER_MEDIAN_CAD_PER_H:.2}"),
         ),
         input("cwc.gwp", format!("{ONTARIO_LUMBER_GWP_A1_A3_KG_PER_M3}")),
+        input("cwc.gwp_sci", sci(ONTARIO_LUMBER_GWP_A1_A3_KG_PER_M3)),
+        input(
+            "nrcan.kwh_per_kwp_raw",
+            format!("{TORONTO_PV_KWH_PER_KWP_YR:.0}"),
+        ),
+        input(
+            "cmhc.needed_k",
+            format!("{:.0}", CMHC_STARTS_NEEDED_PER_YR / 1000.0),
+        ),
+        input("kent.panel_sqft", format!("{PANEL_SQFT:.0}")),
         input("cmhc.needed", grouped(CMHC_STARTS_NEEDED_PER_YR, 0)),
         input("cmhc.bau", grouped(CMHC_STARTS_BAU_PER_YR, 0)),
         input("kent.date", PRICES_ACCESSED.to_string()),
@@ -631,7 +659,57 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
         input("rule.end_studs", format!("{END_STUDS_PER_WALL}")),
         input("rule.corner_studs", format!("{STUDS_PER_CORNER}")),
         input("rule.plate_runs", format!("{PLATE_RUNS:.0}")),
-        // Scenario parameters.
+        // Derived.
+        derived("e1.pr", format!("{:.4}", implied_performance_ratio())),
+        derived("e2.annual", grouped(pv5.annual_kwh, 0)),
+        derived("e2.offset", grouped(off, 2)),
+        derived("e2.offset_whole", grouped(off, 0)),
+        derived("e2.cash", format!("{:.2}", pv5.cash_revenue_cad_per_yr)),
+        derived("e3.annual", grouped(pv10.annual_kwh, 0)),
+        derived(
+            "e4.payback",
+            format!("{:.1}", payback_years(UNIT_COST_CAD[0], off)?),
+        ),
+        derived(
+            "e5.payback",
+            format!("{:.1}", payback_years(UNIT_COST_CAD[1], off)?),
+        ),
+        derived("e6.ceiling", grouped(ROI_YEARS[0] * off, 2)),
+        derived("e7.ceiling", grouped(ROI_YEARS[1] * off, 2)),
+        derived("b3.r22", grouped(bom.lines[2].total(), 2)),
+        derived("b5.material", grouped(mat, 2)),
+        derived("b7.over", grouped((mat - ROI_YEARS[1] * off).abs(), 2)),
+        derived(
+            "b8.over",
+            grouped((bom.lines[2].total() - ROI_YEARS[0] * off).abs(), 2),
+        ),
+        derived(
+            "s1.share",
+            format!(
+                "{:.2}",
+                100.0 * FACTORY_UNITS_PER_YR[0] / CMHC_STARTS_NEEDED_PER_YR
+            ),
+        ),
+        derived(
+            "s2.share",
+            format!(
+                "{:.2}",
+                100.0 * FACTORY_UNITS_PER_YR[1] / CMHC_STARTS_NEEDED_PER_YR
+            ),
+        ),
+        derived(
+            "s3.gap",
+            grouped(CMHC_STARTS_NEEDED_PER_YR - CMHC_STARTS_BAU_PER_YR, 0),
+        ),
+    ];
+    v.extend(scenario_values(fp, &bom));
+    v.extend(comparisons(mat, bom.lines[2].total(), off)?);
+    Ok(v)
+}
+
+/// Scenario parameters (her figures and design choices), not sourced data.
+fn scenario_values(fp: Footprint, bom: &ShellBom) -> Vec<Value> {
+    vec![
         input("unit.length_ft", format!("{:.0}", fp.length_ft)),
         input("unit.width_ft", format!("{:.0}", fp.width_ft)),
         input("unit.height_ft", format!("{:.0}", fp.wall_height_ft)),
@@ -652,52 +730,83 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
         input("roi.long", format!("{:.0}", ROI_YEARS[1])),
         input("factory.small", grouped(FACTORY_UNITS_PER_YR[0], 0)),
         input("factory.large", grouped(FACTORY_UNITS_PER_YR[1], 0)),
-        // Derived.
-        derived("e1.pr", format!("{:.4}", implied_performance_ratio())),
-        derived("e2.annual", grouped(pv5.annual_kwh, 0)),
-        derived("e2.offset", grouped(off, 2)),
-        derived("e2.offset_whole", grouped(off, 0)),
-        derived("e2.cash", format!("{:.2}", pv5.cash_revenue_cad_per_yr)),
-        derived("e3.annual", grouped(pv10.annual_kwh, 0)),
+    ]
+}
+
+/// Comparison words and verdicts generated from the values they describe, so
+/// that "exceeds", "contradicted" or "impossible" cannot outlive the numbers.
+fn comparisons(mat: f64, r22: f64, off: f64) -> Result<Vec<Value>, ModelError> {
+    let e6 = ROI_YEARS[0] * off;
+    let e7 = ROI_YEARS[1] * off;
+    let b5_e7 = Cmp::of(mat, e7, 2);
+    let b3_e6 = Cmp::of(r22, e6, 2);
+    // The v1.0 ROI claim fails for energy if even the cheapest unit's
+    // energy-only payback (a lower bound) is longer than the longest ROI.
+    let fails = payback_years(UNIT_COST_CAD[0], off)? > ROI_YEARS[1];
+    let materials_over = b5_e7 == Cmp::Above;
+    let pick = |c: bool, a: &str, b: &str| (if c { a } else { b }).to_string();
+    Ok(vec![
+        derived("cmp.b5_e7.exceeds", b5_e7.exceeds().to_string()),
+        derived("cmp.b5_e7.exceed", b5_e7.exceed().to_string()),
+        derived("cmp.b3_e6.exceeds", b3_e6.exceeds().to_string()),
         derived(
-            "e4.payback",
-            format!("{:.1}", payback_years(UNIT_COST_CAD[0], off)?),
-        ),
-        derived(
-            "e5.payback",
-            format!("{:.1}", payback_years(UNIT_COST_CAD[1], off)?),
-        ),
-        derived("e6.ceiling", grouped(ROI_YEARS[0] * off, 2)),
-        derived("e7.ceiling", grouped(ROI_YEARS[1] * off, 2)),
-        derived("b3.r22", grouped(bom.lines[2].total(), 2)),
-        derived("b5.material", grouped(mat, 2)),
-        derived("b7.over", grouped(mat - ROI_YEARS[1] * off, 2)),
-        derived(
-            "s1.share",
-            format!(
-                "{:.2}",
-                100.0 * FACTORY_UNITS_PER_YR[0] / CMHC_STARTS_NEEDED_PER_YR
+            "verdict.roi",
+            pick(
+                fails,
+                "Contradicted for energy",
+                "Not contradicted for energy",
             ),
         ),
         derived(
-            "s2.share",
-            format!(
-                "{:.2}",
-                100.0 * FACTORY_UNITS_PER_YR[1] / CMHC_STARTS_NEEDED_PER_YR
+            "verdict.roi_lc",
+            pick(
+                fails,
+                "contradicted for energy",
+                "not contradicted for energy",
             ),
         ),
         derived(
-            "s3.gap",
-            grouped(CMHC_STARTS_NEEDED_PER_YR - CMHC_STARTS_BAU_PER_YR, 0),
+            "verdict.roi_support",
+            pick(fails, "is not supported", "is not ruled out"),
+        ),
+        derived(
+            "status.roi_v1",
+            pick(
+                fails,
+                "contradicted; energy; other revenue unverified",
+                "unverified; energy payback within the claimed range",
+            ),
+        ),
+        derived(
+            "concl.fails",
+            pick(materials_over, "fails", "is not ruled out"),
+        ),
+        derived(
+            "concl.energy_roi",
+            pick(
+                materials_over,
+                "impossible at any unit cost",
+                "possible only if the complete unit costs no more than that ceiling",
+            ),
         ),
     ])
 }
 
+/// The rendered claims of `CLAIMS.md`, from `model/claims.tsv`.
+///
+/// # Errors
+/// [`RenderError`] if the model fails or a claims row is malformed.
+pub fn claims() -> Result<Vec<Claim>, RenderError> {
+    Ok(docgen::parse_claims(CLAIMS_DATA, &values()?)?)
+}
+
 fn render_doc(template: &str) -> Result<String, RenderError> {
+    let block = render_paper_block()?;
+    let table = docgen::claims_table(&claims()?);
     Ok(docgen::render(
         template,
         &values()?,
-        &render_paper_block()?,
+        &[("block", block.as_str()), ("claims_table", table.as_str())],
     )?)
 }
 
