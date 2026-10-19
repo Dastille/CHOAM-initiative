@@ -20,9 +20,6 @@ paper	4	 a human right [NHSA-2019 s.4]. **Proposal.**	id	statute section number 
 paper	200	t-provided modular homes of 200 to 400 sq ft. E	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
 paper	400	ded modular homes of 200 to 400 sq ft. Each uni	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
 paper	2017	l Basic Services floor [UBS-2017]. The aim is fo	date	date or year
-paper	1	r. If every kWh offset Tier-1 consumption it 	id	tariff tier name (Tier 1)
-paper	5	years, so the v1.0 "5 to 7 year ROI v	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
-paper	7	years, so the v1.0 "5 to 7 year ROI via re	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
 paper	20	eed, the literature reports 20 to 50% schedule	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
 paper	50	he literature reports 20 to 50% schedule reduc	quote	[McKinsey-2019] "accelerating project timelines by 20 to 50 percent"
 paper	30	. Neither source quantifies 30%. The revenue-p	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure (the 30% in "20–30%")
@@ -143,7 +140,6 @@ paper	845	 Lumber carbon uses CWC EPD 845, Table 7 (Ontar	id	CWC EPD number
 paper	7	bon uses CWC EPD 845, Table 7 (Ontario, A1–A3	id	cross-reference number
 paper	10.2	### 10.2 Results (genera	id	section heading number
 paper	10.3	### 10.3 Interpretation	id	section heading number
-paper	6.2	7 are upper bounds (section 6.2), a	id	section cross-reference
 paper	10.4	### 10.4 Benefit-cost fr	id	section heading number
 paper	10	ency services. v1.0 stated $10–20B. No source 	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
 paper	20	y services. v1.0 stated $10–20B. No source has	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure; deleted as unsourced
@@ -332,7 +328,6 @@ claims.tsv	2017	UCL IGP 2017, "What are Univ	date	date or year
 claims.tsv	2.21	y (latitude tilt), December 2.21	quote	[NRCan-PV] municip_kWh.csv Toronto December latitude tilt
 claims.tsv	365	`model`: kWp × PSH × 365 × PR (E1–E3)	unit	days per year
 claims.tsv	1	Ontario RPP Tier 1 =	id	tariff tier name (Tier 1)
-claims.tsv	2025-11-01	¢/kWh (from 2025-11-01)	date	date or year
 claims.tsv	2025	 by the OEB for November 1, 2025	date	date or year
 claims.tsv	1	`model` E2b = E2 × Tier 1	id	tariff tier name (Tier 1)
 claims.tsv	12	 cash; credits expire after 12 months	quote	[OEB-NM] "up to 12 months"
@@ -544,3 +539,21 @@ paper	2	es per-m² shipping costs of 2D panels and 3D 	id	2D/3D label
 paper	3	ping costs of 2D panels and 3D modules [McKin	id	2D/3D label
 paper	2019	ls and 3D modules [McKinsey-2019], but that PDF 	date	date or year
 paper	2026-10-18	-read from the audit box on 2026-10-18, so its figures	date	date or year
+paper	1	Wh/yr. Valued at OEB's Tier-1 price it is wor	id	tariff tier name (Tier 1)
+paper	1	cash**. At Tier 1, energy alone r	id	tariff tier name (Tier 1)
+paper	5	(E11–E12), so the v1.0 "5 to 7 year ROI v	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	7	E11–E12), so the v1.0 "5 to 7 year ROI via re	author	Ashlynn v1.0 (commit f1fd699), quoted as her figure
+paper	1	Energy-only payback at Tier 1 is	id	tariff tier name (Tier 1)
+paper	1	value every kWh at the Tier-1 price and assum	id	tariff tier name (Tier 1)
+paper	1	at Tier 1 to $	id	tariff tier name (Tier 1)
+paper	1	n is unsourced, so the Tier-1 bill offsets ar	id	tariff tier name (Tier 1)
+claims.tsv	2025-11-01	eak =   (from 2025-11-01)	date	date or year
+claims.tsv	1	p bill offset $ /yr at Tier 1 (unit consumpti	id	tariff tier name (Tier 1)
+claims.tsv	1	derived; at Tier 1	id	tariff tier name (Tier 1)
+claims.tsv	1	Energy-only payback at Tier 1	id	tariff tier name (Tier 1)
+paper	2	t OEB's higher prices (Tier 2, time-of-use or	id	tariff tier name (Tier 2)
+paper	2	nd OEB's other prices (Tier 2	id	tariff tier name (Tier 2)
+claims.tsv	2	¢/kWh, Tier 2 =	id	tariff tier name (Tier 2)
+claims.tsv	750	ember 1, 2025 || used above 750 kWh/month |	quote	[OEB-RPP] "Non-residential – for electricity used above 750 kWh/month" (evidence needle)
+claims.tsv	4	|| On-Peak Weekdays 4 p.m. – 9 p.m.	quote	[OEB-RPP] ULO "On-Peak Weekdays 4 p.m. – 9 p.m." (evidence needle)
+claims.tsv	9	| On-Peak Weekdays 4 p.m. – 9 p.m.	quote	[OEB-RPP] ULO "On-Peak Weekdays 4 p.m. – 9 p.m." (evidence needle)

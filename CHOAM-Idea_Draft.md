@@ -18,7 +18,7 @@ These lines are the thesis. The rest of the paper checks how far current evidenc
 
 ## Abstract
 
-**Problem.** Canada needs about 430,000 to 480,000 housing starts a year to 2035 to restore 2019 affordability, against a business-as-usual pace of about 245,000 [CMHC-2025]. Federal law declares adequate housing a human right [NHSA-2019 s.4]. **Proposal.** CHOAM is an open-source (copyleft) standard for government-provided modular homes of 200 to 400 sq ft. Each unit comes with solar, broadband and opt-in distributed computing, as a Universal Basic Services floor [UBS-2017]. The aim is for the units to pay their own way. **Method.** We apply a five-step requirements review: question every requirement, delete, simplify, accelerate, and automate last. Every number is derived from first principles using primary data: NRCan solar resource tables, OEB tariffs, Ontario's net-metering rule, dated Canadian retail material prices, the Job Bank wage, and the CWC lumber EPD. The derivations live in a Rust crate (`model/`), which also renders every model-derived number in this paper, its README and CLAIMS.md. **Results.** For a 200 sq ft unit in Toronto, a 5 kWp array yields 5,815 kWh/yr. If every kWh offset Tier-1 consumption it would be worth $697.80/yr; the unit's consumption is not yet sourced, so this is an upper bound. Under Ontario net metering it earns **$0.00 cash**. Energy alone repays a $50k to $80k unit in no less than 71.7 to 114.6 years, so the v1.0 "5 to 7 year ROI via revenue" is not supported for energy. The four partial-shell material lines (framing, sheathing, R22 batts, drywall) cost $4,949.10 before tax. That alone exceeds $4,884.60, the highest unit cost a 7-year energy-only ROI could repay (B7). On build speed, the literature reports 20 to 50% schedule reductions [McKinsey-2019]. On cost, McKinsey reports that modular construction can realize "more than 20 percent" in construction-cost savings at scale [McKinsey-2019], and Terner reports savings of "up to 20 percent" for three- or four-story wood-frame multifamily [Terner-2017]. Neither source quantifies 30%. The revenue-positive and government-floor goals are kept. Section 4 states what would have to change for them to hold.
+**Problem.** Canada needs about 430,000 to 480,000 housing starts a year to 2035 to restore 2019 affordability, against a business-as-usual pace of about 245,000 [CMHC-2025]. Federal law declares adequate housing a human right [NHSA-2019 s.4]. **Proposal.** CHOAM is an open-source (copyleft) standard for government-provided modular homes of 200 to 400 sq ft. Each unit comes with solar, broadband and opt-in distributed computing, as a Universal Basic Services floor [UBS-2017]. The aim is for the units to pay their own way. **Method.** We apply a five-step requirements review: question every requirement, delete, simplify, accelerate, and automate last. Every number is derived from first principles using primary data: NRCan solar resource tables, OEB tariffs, Ontario's net-metering rule, dated Canadian retail material prices, the Job Bank wage, and the CWC lumber EPD. The derivations live in a Rust crate (`model/`), which also renders every model-derived number in this paper, its README and CLAIMS.md. **Results.** For a 200 sq ft unit in Toronto, a 5 kWp array yields 5,815 kWh/yr. Valued at OEB's Tier-1 price it is worth $697.80/yr; at OEB's higher prices (Tier 2, time-of-use or ultra-low-overnight on-peak) it is worth more, and which price applies depends on when the unit consumes, which is not yet sourced. Under Ontario net metering it earns **$0.00 cash**. At Tier 1, energy alone repays a $50k to $80k unit in 71.7 to 114.6 years. A 7-year energy-only payback on a $50k unit would need $1.23/kWh, which exceeds OEB's highest price (39.1 ¢/kWh, ULO on-peak) by a factor of 3.1 (E11–E12), so the v1.0 "5 to 7 year ROI via revenue" is not supported for energy. The four partial-shell material lines (framing, sheathing, R22 batts, drywall) cost $4,949.10 before tax; the rest of the unit is not yet costed. On build speed, the literature reports 20 to 50% schedule reductions [McKinsey-2019]. On cost, McKinsey reports that modular construction can realize "more than 20 percent" in construction-cost savings at scale [McKinsey-2019], and Terner reports savings of "up to 20 percent" for three- or four-story wood-frame multifamily [Terner-2017]. Neither source quantifies 30%. The revenue-positive and government-floor goals are kept. Section 4 states what would have to change for them to hold.
 
 ## 1. Problem statement and definitions
 
@@ -40,7 +40,7 @@ Definitions used throughout:
 | Government-provided modular tiny homes as a UBS floor | **Kept (restored)** | Consistent with NHSA s.4 policy [NHSA-2019]. The scale gap is 232,840 starts/yr above business-as-usual (S3) | A funded program. One factory at 2,000 units/yr meets 0.42% of annual need (S2) |
 | Revenue-positive / fiscal neutrality via solar net metering | **Kept as goal; infeasible as cash in Ontario today** | Net metering pays on-bill credits only; credits expire after 12 months [OEB-NM] (E2c = $0.00) | A cash export tariff or a public virtual power plant (VPP) contract. Otherwise "revenue" means avoided public cost |
 | Revenue from distributed-computing partnerships | **Kept as goal; unverified** | BOINC and Folding@home are volunteer computing [BOINC; FAH]. We found no source for a paid market at household scale | Signed research contracts with published rates |
-| 5–7 year ROI | **Contradicted for energy** | Energy-only payback is at least 71.7–114.6 yr (E4–E5). A 7-yr energy ROI requires a unit cost ≤ $4,884.60 (E7), and the four shell material lines alone cost $4,949.10, which exceeds that ceiling (B5, B7) | Count avoided shelter, health and emergency costs, which needs sourced public-cost data (Limitations L4) |
+| 5–7 year ROI | **Contradicted for energy** | Energy-only payback at Tier 1 is 71.7–114.6 yr (E4–E5). A 7-yr energy-only payback on a $50k unit needs $1.23/kWh, 3.1× OEB's highest price (E11–E12); the 7-yr unit-cost ceiling is $4,884.60–$15,915.66 across OEB prices (E7–E10) | Count avoided shelter, health and emergency costs, which needs sourced public-cost data (Limitations L4) |
 | Up to 50% faster | **Verified (with scope)** | 20–50% schedule reduction [McKinsey-2019]; 40–50% [Terner-2017], measured on multifamily | Pilot measurement on single-storey units |
 | 20–30% cheaper | **Partly verified** | "More than 20 percent" at scale [McKinsey-2019]; "up to 20 percent" of the cost of construction [Terner-2017]. Neither source quantifies 30% | Pilot cost data |
 | Blockchain tracking for anti-corruption | **Restored** (silently dropped in v1.1) | Can give tamper-evident procurement records, but does not stop off-chain bribery or collusion; needs policy and citizen monitoring [WEF-2020] | Pair it with open contracting data [OCDS] and audits |
@@ -105,7 +105,7 @@ Design → Manufacture → Deploy → Operate → Account. v1.0's last step was 
 Stackable units built from open blueprints (CNC-cut frames, WikiHouse-style [WikiHouse]), with plug-and-play utility modules. The partial shell BOM appears in section 10.2.
 
 ### 6.2 Energy
-Rooftop solar with batteries. Excess goes to the grid under net metering as on-bill credits [OEB-NM], and open-source inverters may be aggregated into a VPP. **Derivation chain:** annual kWh = kWp × PSH × 365 × PR. PSH = 4.25 kWh/m²/day is Toronto's latitude-tilt insolation [NRCan-PV, municip_kWh.csv]. PR = 0.7497 is implied by NRCan's own PV-potential table (1,163 kWh/kWp/yr), so the chain reproduces NRCan exactly (E1–E3). Winter output is much lower: the December latitude-tilt potential is 51 kWh/kWp for the month [NRCan-PV]. The bill-offset rows (E2b, E3b) assume every kWh offsets the occupant's own consumption; the unit's consumption has no source yet, so they are upper bounds and the paybacks derived from them (E4–E5) are lower bounds.
+Rooftop solar with batteries. Excess goes to the grid under net metering as on-bill credits [OEB-NM], and open-source inverters may be aggregated into a VPP. **Derivation chain:** annual kWh = kWp × PSH × 365 × PR. PSH = 4.25 kWh/m²/day is Toronto's latitude-tilt insolation [NRCan-PV, municip_kWh.csv]. PR = 0.7497 is implied by NRCan's own PV-potential table (1,163 kWh/kWp/yr), so the chain reproduces NRCan exactly (E1–E3). Winter output is much lower: the December latitude-tilt potential is 51 kWh/kWp for the month [NRCan-PV]. The bill-offset rows (E2b, E3b) value every kWh at the Tier-1 price and assume it offsets the occupant's own consumption. The unit's consumption pattern has no source yet, and OEB's other prices (Tier 2 14.2 ¢, TOU on-peak 20.3 ¢, ULO on-peak 39.1 ¢/kWh [OEB-RPP]) would raise the value, so rows E7–E10 show the 7-year unit-cost ceiling at each price.
 
 ### 6.3 Internet and distributed computing
 Broadband nodes run copyleft software for opt-in, BOINC-class research tasks [BOINC; FAH]. The node would draw on the unit's solar supply; its electrical load is not yet specified. Compute revenue is **unverified** and carried as zero.
@@ -148,24 +148,27 @@ Unit prices are Kent.ca retail, accessed 2026-10-18, pre-tax [Kent]. Lumber carb
 | E1 | Implied performance ratio (NRCan) | 0.7497 | 1163 / (4.25 x 365) |
 | E2 | 5 kWp annual yield, Toronto | 5815 kWh/yr | 5 x 4.25 x 365 x 0.7497 |
 | E2a | 5 kWp mean daily yield | 15.93 kWh/day | annual / 365 |
-| E2b | 5 kWp bill offset at Tier 1, upper bound (every kWh offsets consumption) | $697.80/yr | annual x $0.120 |
+| E2b | 5 kWp bill offset at Tier 1 (every kWh offsets consumption) | $697.80/yr | annual x $0.120 |
 | E2c | 5 kWp cash revenue (net metering) | $0.00/yr | O. Reg. 541/05: credits only |
 | E3 | 10 kWp annual yield, Toronto | 11630 kWh/yr | 10 x 4.25 x 365 x 0.7497 |
 | E3a | 10 kWp mean daily yield | 31.86 kWh/day | annual / 365 |
-| E3b | 10 kWp bill offset at Tier 1, upper bound (every kWh offsets consumption) | $1395.60/yr | annual x $0.120 |
+| E3b | 10 kWp bill offset at Tier 1 (every kWh offsets consumption) | $1395.60/yr | annual x $0.120 |
 | E3c | 10 kWp cash revenue (net metering) | $0.00/yr | O. Reg. 541/05: credits only |
-| E4 | Energy-only payback on a $50000 unit (5 kWp), lower bound | 71.7 yr | 50000 / 697.80 |
-| E5 | Energy-only payback on a $80000 unit (5 kWp), lower bound | 114.6 yr | 80000 / 697.80 |
-| E6 | Max unit cost for a 5-yr energy-only ROI (5 kWp), upper bound | $3489.00 | 5 x 697.80 |
-| E7 | Max unit cost for a 7-yr energy-only ROI (5 kWp), upper bound | $4884.60 | 7 x 697.80 |
+| E4 | Energy-only payback on a $50000 unit (5 kWp), at Tier 1 | 71.7 yr | 50000 / 697.80 |
+| E5 | Energy-only payback on a $80000 unit (5 kWp), at Tier 1 | 114.6 yr | 80000 / 697.80 |
+| E6 | Max unit cost for a 5-yr energy-only ROI (5 kWp), at Tier 1 | $3489.00 | 5 x 697.80 |
+| E7 | Max unit cost for a 7-yr energy-only ROI (5 kWp), at Tier 1 (12.0 c/kWh) | $4884.60 | 7 x 5815 x 0.120 |
+| E8 | Max unit cost for a 7-yr energy-only ROI (5 kWp), at Tier 2 (14.2 c/kWh) | $5780.11 | 7 x 5815 x 0.142 |
+| E9 | Max unit cost for a 7-yr energy-only ROI (5 kWp), at TOU on-peak (20.3 c/kWh) | $8263.11 | 7 x 5815 x 0.203 |
+| E10 | Max unit cost for a 7-yr energy-only ROI (5 kWp), at ULO on-peak (39.1 c/kWh) | $15915.66 | 7 x 5815 x 0.391 |
+| E11 | Price per kWh a 7-yr energy-only payback on a $50000 unit needs | $1.23/kWh | 50000 / (7 x 5815) |
+| E12 | E11 as a multiple of OEB's highest price (ULO on-peak) | 3.1x | 1.228 / 0.391 |
 | B1 | 2x6x8 SPF (studs + plates) | 65 x $6.68 = $434.20 | Kent.ca 2026-10-18 |
 | B2 | 7/16 OSB 4x8 (walls, roof deck, subfloor) | 28 x $16.23 = $454.44 | Kent.ca 2026-10-18 |
 | B3 | R22 ComfortBatt 37.5 sq ft bag | 24 x $152.53 = $3660.72 | Kent.ca 2026-10-18 |
 | B4 | 1/2 drywall 4x8 (walls + ceiling) | 22 x $18.17 = $399.74 | Kent.ca 2026-10-18 |
 | B5 | Partial shell materials, 200 sq ft (pre-tax) | $4949.10 | sum B1-B4 |
 | B6 | Partial shell materials per sq ft | $24.75/sq ft | B5 / 200 |
-| B7 | Partial shell (B5) minus 7-yr ceiling (E7) | $64.50 | 4949.10 - 4884.60 |
-| B8 | R22 line (B3) minus 5-yr ceiling (E6) | $171.72 | 3660.72 - 3489.00 |
 | L1 | Labour at 100 h (sensitivity point, not an estimate) | $3200.00 | 100 x $32.00 |
 | L2 | Labour at 200 h (sensitivity point, not an estimate) | $6400.00 | 200 x $32.00 |
 | L3 | Labour at 400 h (sensitivity point, not an estimate) | $12800.00 | 400 x $32.00 |
@@ -176,7 +179,7 @@ Unit prices are Kent.ca retail, accessed 2026-10-18, pre-tax [Kent]. Lumber carb
 <!-- END GENERATED -->
 
 ### 10.3 Interpretation
-- **The energy-only ROI fails on materials alone.** The four partial-shell material lines (B5, $4,949.10) exceed the 7-year energy-only ceiling (E7, $4,884.60) by $64.50 (B7), and the R22 line alone (B3, $3,660.72) exceeds the 5-year ceiling (E6, $3,489.00) by $171.72 (B8). Because E6 and E7 are upper bounds (section 6.2), a 5–7-year ROI from energy is impossible at any unit cost.
+- **The energy-only ROI fails at every OEB price.** A 7-year energy-only payback on a $50k unit needs $1.23/kWh, which exceeds OEB's highest price (39.1 ¢/kWh, ULO on-peak) by a factor of 3.1 (E11–E12). The 7-year unit-cost ceiling runs from $4,884.60 at Tier 1 to $15,915.66 at ULO on-peak (E7–E10). The partial-shell materials (B5, $4,949.10) are only part of the unit cost, which is not yet derived, so they do not settle the question on their own.
 - The partial shell (B5) is a small fraction of the $50–80k target. The rest of the cost sits in items not yet derived: roof and floor structure, roofing, windows, doors, foundation, wet core, electrical, mechanical, ramp, finishes, permits, land and site work. Until those are taken off, **the $50–80k unit cost is unverified**.
 - Labour hours for a 200 sq ft unit have no primary source yet. L1–L3 are sensitivity points only.
 - Energy pays the occupant at most about $698/yr in offsets, not the public in cash. Revenue-positive therefore depends on avoided public costs (unsourced, L4) or a change in export rules.
@@ -216,7 +219,7 @@ CI runs fmt, clippy (pedantic, warnings denied), the tests (including doctests),
 ## 14. Limitations
 - **L1.** The BOM covers four material lines only (B1–B4), at one Atlantic-Canada retailer's prices, pre-tax, without delivery or volume discounts. Ontario prices may differ.
 - **L2.** The labour hours are not sourced. The wage is a 2023–2024 reference-period median that we read through a search index, because jobbank.gc.ca refused a direct fetch.
-- **L3.** The energy figures use NRCan's municipal model for Toronto at latitude tilt. They are not a site simulation, and shading, snow and orientation will lower them. Tier-1 is the commodity price only; whether net-metering credits offset other volumetric charges depends on the utility. The unit's consumption is unsourced, so the bill offsets are upper bounds.
+- **L3.** The energy figures use NRCan's municipal model for Toronto at latitude tilt. They are not a site simulation, and shading, snow and orientation will lower them. Tier-1 is the commodity price only; whether net-metering credits offset other volumetric charges depends on the utility. The unit's consumption is unsourced, so the Tier-1 bill offsets are an assumption; rows E7–E10 show the effect of OEB's other prices.
 - **L4.** The avoided public costs needed for "revenue-positive" have not been sourced.
 - **L5.** The code-compliance statements cite the codes' scope and certification route. They are not a code review of a design, because no drawings exist yet. The stud table was read through NRC's reproduction of the NBC 2020 first printing [NRC-PCF-1677]; the NBC 2020 PDF itself could not be fetched from the audit box, and the second printing (2025 errata) was not checked.
 - **L6.** The construction-speed and cost literature is US multifamily evidence and may not transfer to 200 sq ft single-storey units.

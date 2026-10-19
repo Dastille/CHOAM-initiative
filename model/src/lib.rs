@@ -50,6 +50,27 @@ pub const PRICES_ACCESSED: &str = "2026-10-18";
 /// 12.0 cents/kWh (commodity line only; excludes delivery, regulatory, HST).
 /// <https://oeb.ca/consumer-information-and-protection/electricity-rates>
 pub const ONTARIO_RPP_TIER1_CAD_PER_KWH: f64 = 0.120;
+/// Same OEB table, Tier 2 price: 14.2 cents/kWh.
+pub const ONTARIO_RPP_TIER2_CAD_PER_KWH: f64 = 0.142;
+/// Same OEB page, Time-of-Use On-Peak price: 20.3 cents/kWh.
+pub const ONTARIO_TOU_ON_PEAK_CAD_PER_KWH: f64 = 0.203;
+/// Same OEB page, Ultra-Low Overnight plan On-Peak price: 39.1 cents/kWh,
+/// the highest price on the page.
+pub const ONTARIO_ULO_ON_PEAK_CAD_PER_KWH: f64 = 0.391;
+
+/// The OEB prices used for the payback ceilings (rows E7-E10), lowest first.
+pub const OEB_PRICES: [(&str, &str, f64); 4] = [
+    ("E7", "Tier 1", ONTARIO_RPP_TIER1_CAD_PER_KWH),
+    ("E8", "Tier 2", ONTARIO_RPP_TIER2_CAD_PER_KWH),
+    ("E9", "TOU on-peak", ONTARIO_TOU_ON_PEAK_CAD_PER_KWH),
+    ("E10", "ULO on-peak", ONTARIO_ULO_ON_PEAK_CAD_PER_KWH),
+];
+
+/// Price per kWh at which `kwh_per_yr` repays `capital_cad` in `years`.
+#[must_use]
+pub fn required_tariff(capital_cad: f64, years: f64, kwh_per_yr: f64) -> f64 {
+    capital_cad / (years * kwh_per_yr)
+}
 
 /// Ontario net metering (O. Reg. 541/05) pays on-bill credits, not cash;
 /// credits older than 12 months are reduced to $0 (s. 8(8)), per
@@ -442,9 +463,7 @@ fn energy_rows(o: &mut Rows) -> Result<(), ModelError> {
         );
         o.row(
             &format!("{id}b"),
-            &format!(
-                "{kwp:.0} kWp bill offset at Tier 1, upper bound (every kWh offsets consumption)"
-            ),
+            &format!("{kwp:.0} kWp bill offset at Tier 1 (every kWh offsets consumption)"),
             &format!("${:.2}/yr", pv.bill_offset_cad_per_yr),
             &format!("annual x ${tariff:.3}"),
         );
@@ -460,31 +479,58 @@ fn energy_rows(o: &mut Rows) -> Result<(), ModelError> {
         o.row(
             id,
             &format!(
-                "Energy-only payback on a ${cap:.0} unit ({:.0} kWp), lower bound",
+                "Energy-only payback on a ${cap:.0} unit ({:.0} kWp), at Tier 1",
                 ARRAY_KWP[0]
             ),
             &format!("{:.1} yr", payback_years(cap, offset)?),
             &format!("{cap:.0} / {offset:.2}"),
         );
     }
-    for (id, yrs) in ["E6", "E7"].into_iter().zip(ROI_YEARS) {
+    o.row(
+        "E6",
+        &format!(
+            "Max unit cost for a {:.0}-yr energy-only ROI ({:.0} kWp), at Tier 1",
+            ROI_YEARS[0], ARRAY_KWP[0]
+        ),
+        &format!("${:.2}", ROI_YEARS[0] * offset),
+        &format!("{:.0} x {offset:.2}", ROI_YEARS[0]),
+    );
+    let kwh = pv_energy(ARRAY_KWP[0])?.annual_kwh;
+    let yrs = ROI_YEARS[1];
+    for (id, name, price) in OEB_PRICES {
         o.row(
             id,
             &format!(
-                "Max unit cost for a {yrs:.0}-yr energy-only ROI ({:.0} kWp), upper bound",
-                ARRAY_KWP[0]
+                "Max unit cost for a {yrs:.0}-yr energy-only ROI ({:.0} kWp), at {name} ({:.1} c/kWh)",
+                ARRAY_KWP[0],
+                price * 100.0
             ),
-            &format!("${:.2}", yrs * offset),
-            &format!("{yrs:.0} x {offset:.2}"),
+            &format!("${:.2}", yrs * kwh * price),
+            &format!("{yrs:.0} x {kwh:.0} x {price:.3}"),
         );
     }
+    let need = required_tariff(UNIT_COST_CAD[0], yrs, kwh);
+    o.row(
+        "E11",
+        &format!(
+            "Price per kWh a {yrs:.0}-yr energy-only payback on a ${:.0} unit needs",
+            UNIT_COST_CAD[0]
+        ),
+        &format!("${need:.2}/kWh"),
+        &format!("{:.0} / ({yrs:.0} x {kwh:.0})", UNIT_COST_CAD[0]),
+    );
+    o.row(
+        "E12",
+        "E11 as a multiple of OEB's highest price (ULO on-peak)",
+        &format!("{:.1}x", need / ONTARIO_ULO_ON_PEAK_CAD_PER_KWH),
+        &format!("{need:.3} / {ONTARIO_ULO_ON_PEAK_CAD_PER_KWH:.3}"),
+    );
     Ok(())
 }
 
 fn bom_rows(o: &mut Rows) -> Result<(), ModelError> {
     let bom = shell_bom(REFERENCE_UNIT)?;
     let mat = bom.material_cad();
-    let offset = pv_energy(ARRAY_KWP[0])?.bill_offset_cad_per_yr;
     for (i, l) in bom.lines.iter().enumerate() {
         o.row(
             &format!("B{}", i + 1),
@@ -507,24 +553,6 @@ fn bom_rows(o: &mut Rows) -> Result<(), ModelError> {
         "Partial shell materials per sq ft",
         &format!("${:.2}/sq ft", mat / bom.floor_sqft),
         &format!("B5 / {:.0}", bom.floor_sqft),
-    );
-    let ceiling_long = ROI_YEARS[1] * offset;
-    let ceiling_short = ROI_YEARS[0] * offset;
-    let r22 = bom.lines[2].total();
-    o.row(
-        "B7",
-        &format!(
-            "Partial shell (B5) minus {:.0}-yr ceiling (E7)",
-            ROI_YEARS[1]
-        ),
-        &format!("${:.2}", mat - ceiling_long),
-        &format!("{mat:.2} - {ceiling_long:.2}"),
-    );
-    o.row(
-        "B8",
-        &format!("R22 line (B3) minus {:.0}-yr ceiling (E6)", ROI_YEARS[0]),
-        &format!("${:.2}", r22 - ceiling_short),
-        &format!("{r22:.2} - {ceiling_short:.2}"),
     );
     for (id, h) in ["L1", "L2", "L3"].into_iter().zip(LABOUR_HOURS) {
         o.row(
@@ -623,6 +651,7 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
     let bom = shell_bom(REFERENCE_UNIT)?;
     let mat = bom.material_cad();
     let off = pv5.bill_offset_cad_per_yr;
+    let need = required_tariff(UNIT_COST_CAD[0], ROI_YEARS[1], pv5.annual_kwh);
     let fp = REFERENCE_UNIT;
     let mut v = vec![
         // Sourced inputs.
@@ -678,11 +707,6 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
         derived("e7.ceiling", grouped(ROI_YEARS[1] * off, 2)),
         derived("b3.r22", grouped(bom.lines[2].total(), 2)),
         derived("b5.material", grouped(mat, 2)),
-        derived("b7.over", grouped((mat - ROI_YEARS[1] * off).abs(), 2)),
-        derived(
-            "b8.over",
-            grouped((bom.lines[2].total() - ROI_YEARS[0] * off).abs(), 2),
-        ),
         derived(
             "s1.share",
             format!(
@@ -703,7 +727,8 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
         ),
     ];
     v.extend(scenario_values(fp, &bom));
-    v.extend(comparisons(mat, bom.lines[2].total(), off)?);
+    v.extend(tariff_values(pv5.annual_kwh, need));
+    v.extend(comparisons(need));
     Ok(v)
 }
 
@@ -733,22 +758,48 @@ fn scenario_values(fp: Footprint, bom: &ShellBom) -> Vec<Value> {
     ]
 }
 
+/// OEB prices beyond Tier 1 and the 7-year ceilings and required price
+/// they imply (rows E8-E12).
+fn tariff_values(kwh: f64, need: f64) -> Vec<Value> {
+    vec![
+        input(
+            "oeb.tier2_cents",
+            format!("{:.1}", ONTARIO_RPP_TIER2_CAD_PER_KWH * 100.0),
+        ),
+        input(
+            "oeb.tou_peak_cents",
+            format!("{:.1}", ONTARIO_TOU_ON_PEAK_CAD_PER_KWH * 100.0),
+        ),
+        input(
+            "oeb.ulo_peak_cents",
+            format!("{:.1}", ONTARIO_ULO_ON_PEAK_CAD_PER_KWH * 100.0),
+        ),
+        derived(
+            "e8.ceiling",
+            grouped(ROI_YEARS[1] * kwh * ONTARIO_RPP_TIER2_CAD_PER_KWH, 2),
+        ),
+        derived(
+            "e10.ceiling",
+            grouped(ROI_YEARS[1] * kwh * ONTARIO_ULO_ON_PEAK_CAD_PER_KWH, 2),
+        ),
+        derived("e11.tariff", format!("{need:.2}")),
+        derived(
+            "e12.ratio",
+            format!("{:.1}", need / ONTARIO_ULO_ON_PEAK_CAD_PER_KWH),
+        ),
+    ]
+}
+
 /// Comparison words and verdicts generated from the values they describe, so
-/// that "exceeds", "contradicted" or "impossible" cannot outlive the numbers.
-fn comparisons(mat: f64, r22: f64, off: f64) -> Result<Vec<Value>, ModelError> {
-    let e6 = ROI_YEARS[0] * off;
-    let e7 = ROI_YEARS[1] * off;
-    let b5_e7 = Cmp::of(mat, e7, 2);
-    let b3_e6 = Cmp::of(r22, e6, 2);
-    // The v1.0 ROI claim fails for energy if even the cheapest unit's
-    // energy-only payback (a lower bound) is longer than the longest ROI.
-    let fails = payback_years(UNIT_COST_CAD[0], off)? > ROI_YEARS[1];
-    let materials_over = b5_e7 == Cmp::Above;
+/// that "exceeds" or "contradicted" cannot outlive the numbers.
+fn comparisons(need: f64) -> Vec<Value> {
+    // The v1.0 ROI claim fails for energy if the price a 7-year payback on
+    // the cheapest unit needs is above OEB's highest price.
+    let top = Cmp::of(need, ONTARIO_ULO_ON_PEAK_CAD_PER_KWH, 3);
+    let fails = top == Cmp::Above;
     let pick = |c: bool, a: &str, b: &str| (if c { a } else { b }).to_string();
-    Ok(vec![
-        derived("cmp.b5_e7.exceeds", b5_e7.exceeds().to_string()),
-        derived("cmp.b5_e7.exceed", b5_e7.exceed().to_string()),
-        derived("cmp.b3_e6.exceeds", b3_e6.exceeds().to_string()),
+    vec![
+        derived("cmp.e11_top.exceeds", top.exceeds().to_string()),
         derived(
             "verdict.roi",
             pick(
@@ -773,23 +824,12 @@ fn comparisons(mat: f64, r22: f64, off: f64) -> Result<Vec<Value>, ModelError> {
             "status.roi_v1",
             pick(
                 fails,
-                "contradicted; energy; other revenue unverified",
-                "unverified; energy payback within the claimed range",
+                "contradicted; energy at every OEB price; other revenue unverified",
+                "unverified; energy payback possible at some OEB price",
             ),
         ),
-        derived(
-            "concl.fails",
-            pick(materials_over, "fails", "is not ruled out"),
-        ),
-        derived(
-            "concl.energy_roi",
-            pick(
-                materials_over,
-                "impossible at any unit cost",
-                "possible only if the complete unit costs no more than that ceiling",
-            ),
-        ),
-    ])
+        derived("concl.fails", pick(fails, "fails", "is not ruled out")),
+    ]
 }
 
 /// The rendered claims of `CLAIMS.md`, from `model/claims.tsv`.

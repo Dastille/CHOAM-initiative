@@ -23,11 +23,11 @@ All accesses were on 2026-10-18 (America/New_York).
 | 4 | Toronto PV potential 1,163 kWh/kWp/yr (latitude tilt); December 51 kWh/kWp | NRCan municip_potentiel-potential.csv, row Ontario/Toronto, Annual and December | verified |
 | 5 | Toronto insolation 4.25 kWh/m²/day (latitude tilt), December 2.21 | NRCan municip_kWh.csv, row Ontario/Toronto | verified |
 | 6 | PR 0.7497; 5 kWp → 5,815 kWh/yr; 10 kWp → 11,630 | `model`: kWp × PSH × 365 × PR (E1–E3) | derived |
-| 7 | Ontario RPP Tier 1 = 12.0 ¢/kWh (from 2025-11-01) | OEB electricity rates, "Tiered" table https://oeb.ca/consumer-information-and-protection/electricity-rates | verified |
-| 8 | 5 kWp bill offset $697.80/yr, upper bound (unit consumption unsourced) | `model` E2b = E2 × Tier 1 | derived (upper bound) |
+| 7 | Ontario RPP Tier 1 = 12.0 ¢/kWh, Tier 2 = 14.2, TOU on-peak = 20.3, ULO on-peak = 39.1 (from 2025-11-01) | OEB electricity rates, "Tiered", TOU and ULO tables https://oeb.ca/consumer-information-and-protection/electricity-rates | verified |
+| 8 | 5 kWp bill offset $697.80/yr at Tier 1 (unit consumption unsourced) | `model` E2b = E2 × Tier 1 | derived (at Tier 1) |
 | 9 | Net metering pays credits, not cash; credits expire after 12 months | OEB net metering page, "How net metering works" + note on s.8(8) O. Reg. 541/05 https://oeb.ca/consumer-information-and-protection/net-metering | verified |
-| 10 | Energy-only payback at least 71.7 yr ($50k) / 114.6 yr ($80k) | `model` E4–E5 | derived (lower bound) |
-| 11 | v1.0 "5–7 yr ROI via revenue" | `model` E6–E7: a 5–7 yr energy ROI requires unit cost ≤ $3,489.00–$4,884.60; B5 = $4,949.10 exceeds E7 (B7) | contradicted (energy; other revenue unverified) |
+| 10 | Energy-only payback at Tier 1 71.7 yr ($50k) / 114.6 yr ($80k) | `model` E4–E5 | derived (at Tier 1) |
+| 11 | v1.0 "5–7 yr ROI via revenue" | `model` E11–E12: a 7 yr energy payback on a $50k unit needs $1.23/kWh, which exceeds OEB's highest price (39.1 ¢) by a factor of 3.1; the 7 yr ceiling is $4,884.60–$15,915.66 across OEB prices (E7–E10) | contradicted (energy at every OEB price; other revenue unverified) |
 | 12 | Modular cuts schedules 20–50%; "more than 20 percent" construction-cost savings at scale | McKinsey 2019, "Potential for profound impact" https://www.mckinsey.com/capabilities/operations/our-insights/modular-construction-from-projects-to-products | verified |
 | 13 | Off-site cuts time 40–50%; saves "up to 20 percent on the cost of construction" (3–4 storey wood multifamily) | Terner Center 2017, "Cost Savings" and "Time Savings" https://ternercenter.berkeley.edu/wp-content/uploads/2020/08/offsite_construction.pdf | verified |
 | 14 | v1.0 "lower costs by 20–30%" | Items 12–13: "more than 20 percent" and "up to 20 percent"; neither quantifies 30% | partly verified |

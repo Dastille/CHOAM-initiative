@@ -1,10 +1,19 @@
 # Source: Ontario Energy Board, Electricity rates
 # URL: https://oeb.ca/consumer-information-and-protection/electricity-rates
-# Accessed: 2026-10-18 03:00 America/New_York (EDT)
-# Method: WebFetch text extraction of the public page
+# Accessed: 2026-10-18 03:00 America/New_York (EDT); TOU and ULO rows below the second [...] added from a re-fetch on 2026-10-19 09:25 America/New_York (EDT)
+# Method: WebFetch text extraction of the public page; re-fetch by curl (HTTP 200), tags stripped, table cells joined by spaces
 # Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
 ---
 The TOU, ULO and Tiered prices set by the OEB for November 1, 2025, are shown in the table below. View historical electricity prices.
 [...]
 | Tier 1 | Residential – first 1,000 kWh/month Non-residential – first 750 kWh/month | Residential – first 600 kWh/month Non-residential – first 750 kWh/month | 12.0 |
 | Tier 2 | Residential – for electricity used above 1,000 kWh/month Non-residential – for electricity used above 750 kWh/month | Residential – for electricity used above 600 kWh/month Non-residential – for electricity used above 750 kWh/month | 14.2 |
+[...]
+Off-Peak Weekdays 7 p.m. – 7 a.m. Weekends and holidays all day Weekdays 7 p.m. – 7 a.m. Weekends and holidays all day 9.8
+Mid-Peak Weekdays 11 a.m. – 5 p.m. Weekdays 7 a.m. – 11 a.m. and 5 p.m. – 7 p.m. 15.7
+On-Peak Weekdays 7 a.m. – 11 a.m. and 5 p.m. – 7 p.m. Weekdays 11 a.m. – 5 p.m. 20.3
+Ultra-Low Overnight (ULO)ULO Price Periods All Year ULO Prices (¢/kWh)
+Ultra-Low Overnight Every day 11 p.m. - 7 a.m. 3.9
+Weekend Off-Peak Weekends and holidays 7 a.m. – 11 p.m. 9.8
+Mid-Peak Weekdays 7 a.m. – 4 p.m. and 9 p.m. to 11 p.m. 15.7
+On-Peak Weekdays 4 p.m. – 9 p.m. 39.1
