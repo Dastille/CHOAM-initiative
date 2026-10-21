@@ -12,9 +12,9 @@ CHOAM is an open, copyleft standard for **government-provided** modular homes of
 
 ## What the numbers say
 
-- **Solar output.** A {{kwp.ref}} kWp array in Toronto yields **{{e2.annual}} kWh/yr** (NRCan). If every kWh offset Tier-1 consumption it would be worth at most **${{e2.offset}}/yr** (OEB); the unit's consumption is not yet sourced.
+- **Solar output.** A {{kwp.ref}} kWp array in Toronto yields **{{e2.annual}} kWh/yr** (NRCan). If every kWh offset Tier-1 consumption it would be worth **${{e2.offset}}/yr** at Tier 1, and up to about **${{e2.offset_ulo_whole}}/yr** if every kWh offset ULO on-peak consumption (OEB prices effective {{oeb.effective}}); which applies depends on the unit's consumption, which is not yet sourced.
 - **No cash revenue.** Ontario net metering pays credits, not cash.
-- **Energy-only payback.** Energy alone repays a ${{cost.low_k}}k unit in no less than **{{e4.payback}} yr** and an ${{cost.high_k}}k unit in no less than **{{e5.payback}} yr**. A {{roi.long}}-year energy-only ROI would need a unit cost of at most **${{e7.ceiling}}**.
+- **Energy-only payback.** At Tier 1, energy alone repays a ${{cost.low_k}}k unit in **{{e4.payback}} yr** and an ${{cost.high_k}}k unit in **{{e5.payback}} yr**. A {{roi.long}}-year energy-only ROI would need a unit cost of **${{e7.ceiling}}** at Tier 1 to **${{e10.ceiling}}** at ULO on-peak (E7–E10).
 - **Shell materials.** The partial shell materials for {{unit.sqft}} sq ft (framing, OSB, R22, drywall; Kent.ca retail, {{kent.date}}, pre-tax) come to **${{b5.material}}**. Energy alone does not repay a ${{cost.low_k}}k unit in {{roi.long}} years at any OEB price: that would need ${{e11.tariff}}/kWh, {{e12.ratio}}× OEB's highest price ({{oeb.ulo_peak_cents}} ¢/kWh). Revenue-positive depends on avoided public costs or on a cash export tariff. Paper sections 2 and 10 explain what would have to change. The rest of the unit is not yet derived, so the ${{cost.low_k}}–{{cost.high_k}}k target is unverified.
 - **Factory scale.** One factory at {{factory.large}} units/yr meets **{{s2.share}}%** of CMHC's annual need ({{cmhc.needed}} starts/yr).
 - **Build speed and cost.** Factory building is 20–50% faster in the literature. On cost, McKinsey reports "more than 20 percent" savings at scale and Terner "up to 20 percent" for multifamily; neither quantifies 30%.

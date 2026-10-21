@@ -46,17 +46,28 @@ pub const TORONTO_PV_DEC_KWH_PER_KWP: f64 = 51.0;
 /// Date the Kent.ca prices below were read.
 pub const PRICES_ACCESSED: &str = "2026-10-18";
 
-/// OEB Regulated Price Plan, Tiered, Tier 1 price effective 2025-11-01:
-/// 12.0 cents/kWh (commodity line only; excludes delivery, regulatory, HST).
+/// Date the OEB prices below take effect. The OEB sets prices once a year on
+/// November 1; these are the prices set for 2026-11-01 (published on the OEB
+/// page by 2026-10-21). They replace the 2025-11-01 prices (Tier 1 12.0, Tier 2
+/// 14.2, TOU on-peak 20.3, ULO on-peak 39.1 cents/kWh), which apply through
+/// 2026-10-31; both excerpts are kept in `sources/`.
+pub const OEB_PRICES_EFFECTIVE: &str = "2026-11-01";
+/// First day of the superseded OEB price period.
+pub const OEB_PRIOR_PRICES_START: &str = "2025-11-01";
+/// Last day of the superseded OEB price period.
+pub const OEB_PRIOR_PRICES_END: &str = "2026-10-31";
+
+/// OEB Regulated Price Plan, Tiered, Tier 1 price effective 2026-11-01:
+/// 11.2 cents/kWh (commodity line only; excludes delivery, regulatory, HST).
 /// <https://oeb.ca/consumer-information-and-protection/electricity-rates>
-pub const ONTARIO_RPP_TIER1_CAD_PER_KWH: f64 = 0.120;
-/// Same OEB table, Tier 2 price: 14.2 cents/kWh.
-pub const ONTARIO_RPP_TIER2_CAD_PER_KWH: f64 = 0.142;
-/// Same OEB page, Time-of-Use On-Peak price: 20.3 cents/kWh.
-pub const ONTARIO_TOU_ON_PEAK_CAD_PER_KWH: f64 = 0.203;
-/// Same OEB page, Ultra-Low Overnight plan On-Peak price: 39.1 cents/kWh,
+pub const ONTARIO_RPP_TIER1_CAD_PER_KWH: f64 = 0.112;
+/// Same OEB table, Tier 2 price: 13.2 cents/kWh.
+pub const ONTARIO_RPP_TIER2_CAD_PER_KWH: f64 = 0.132;
+/// Same OEB page, Time-of-Use On-Peak price: 18.9 cents/kWh.
+pub const ONTARIO_TOU_ON_PEAK_CAD_PER_KWH: f64 = 0.189;
+/// Same OEB page, Ultra-Low Overnight plan On-Peak price: 37.7 cents/kWh,
 /// the highest price on the page.
-pub const ONTARIO_ULO_ON_PEAK_CAD_PER_KWH: f64 = 0.391;
+pub const ONTARIO_ULO_ON_PEAK_CAD_PER_KWH: f64 = 0.377;
 
 /// The OEB prices used for the payback ceilings (rows E7-E10), lowest first.
 pub const OEB_PRICES: [(&str, &str, f64); 4] = [
@@ -657,6 +668,9 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
         // Sourced inputs.
         input("nrcan.kwh_per_kwp", grouped(TORONTO_PV_KWH_PER_KWP_YR, 0)),
         input("nrcan.psh", format!("{TORONTO_PSH_LAT_TILT}")),
+        input("oeb.effective", OEB_PRICES_EFFECTIVE.to_string()),
+        input("oeb.prior_start", OEB_PRIOR_PRICES_START.to_string()),
+        input("oeb.prior_end", OEB_PRIOR_PRICES_END.to_string()),
         input("nrcan.dec", format!("{TORONTO_PV_DEC_KWH_PER_KWP:.0}")),
         input(
             "oeb.tier1_cents",
@@ -693,6 +707,10 @@ pub fn values() -> Result<Vec<Value>, ModelError> {
         derived("e2.annual", grouped(pv5.annual_kwh, 0)),
         derived("e2.offset", grouped(off, 2)),
         derived("e2.offset_whole", grouped(off, 0)),
+        derived(
+            "e2.offset_ulo_whole",
+            grouped(pv5.annual_kwh * ONTARIO_ULO_ON_PEAK_CAD_PER_KWH, 0),
+        ),
         derived("e2.cash", format!("{:.2}", pv5.cash_revenue_cad_per_yr)),
         derived("e3.annual", grouped(pv10.annual_kwh, 0)),
         derived(

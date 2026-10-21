@@ -13,7 +13,8 @@ fn pv_chain_reproduces_nrcan_potential() {
 fn five_kw_value_and_zero_cash() {
     let e = pv_energy(5.0).unwrap();
     assert!((e.annual_kwh - 5815.0).abs() < 1e-9);
-    assert!((e.bill_offset_cad_per_yr - 697.8).abs() < 1e-9);
+    // 5,815 kWh x 0.112 CAD/kWh (OEB Tier 1, effective 2026-11-01).
+    assert!((e.bill_offset_cad_per_yr - 651.28).abs() < 1e-9);
     assert_eq!(e.cash_revenue_cad_per_yr, 0.0);
 }
 

@@ -148,7 +148,7 @@ Unit prices are Kent.ca retail, accessed {{kent.date}}, pre-tax [Kent]. Lumber c
 - **The energy-only ROI {{concl.fails}} at every OEB price.** A {{roi.long}}-year energy-only payback on a ${{cost.low_k}}k unit needs ${{e11.tariff}}/kWh, which {{cmp.e11_top.exceeds}} OEB's highest price ({{oeb.ulo_peak_cents}} ¢/kWh, ULO on-peak) by a factor of {{e12.ratio}} (E11–E12). The {{roi.long}}-year unit-cost ceiling runs from ${{e7.ceiling}} at Tier 1 to ${{e10.ceiling}} at ULO on-peak (E7–E10). The partial-shell materials (B5, ${{b5.material}}) are only part of the unit cost, which is not yet derived, so they do not settle the question on their own.
 - The partial shell (B5) is a small fraction of the ${{cost.low_k}}–{{cost.high_k}}k target. The rest of the cost sits in items not yet derived: roof and floor structure, roofing, windows, doors, foundation, wet core, electrical, mechanical, ramp, finishes, permits, land and site work. Until those are taken off, **the ${{cost.low_k}}–{{cost.high_k}}k unit cost is unverified**.
 - Labour hours for a {{unit.sqft}} sq ft unit have no primary source yet. L1–L3 are sensitivity points only.
-- Energy pays the occupant at most about ${{e2.offset_whole}}/yr in offsets, not the public in cash. Revenue-positive therefore depends on avoided public costs (unsourced, L4) or a change in export rules.
+- Energy pays the occupant about ${{e2.offset_whole}}/yr in offsets at Tier 1, and up to about ${{e2.offset_ulo_whole}}/yr if every kWh offset ULO on-peak consumption (E7–E10 prices), not the public in cash. Revenue-positive therefore depends on avoided public costs (unsourced, L4) or a change in export rules.
 - R22 in the roof and floor is a placeholder. Insulation must meet the energy-efficiency requirements of the code in force.
 
 ### 10.4 Benefit-cost framework
@@ -211,7 +211,7 @@ CI runs fmt, clippy (pedantic, warnings denied), the tests (including doctests),
 - [OBC-2024] O. Reg. 163/24, Building Code (Ontario). https://www.ontario.ca/laws/regulation/r24163
 - [OCDS] Open Contracting Data Standard. https://standard.open-contracting.org/
 - [OEB-NM] Ontario Energy Board, Net metering (O. Reg. 541/05 s. 8(8)). https://oeb.ca/consumer-information-and-protection/net-metering
-- [OEB-RPP] Ontario Energy Board, Electricity rates (effective 2025-11-01). https://oeb.ca/consumer-information-and-protection/electricity-rates
+- [OEB-RPP] Ontario Energy Board, Electricity rates, prices effective {{oeb.effective}} (the paper uses these rather than the {{oeb.prior_start}} prices, which apply through {{oeb.prior_end}}). https://oeb.ca/consumer-information-and-protection/electricity-rates
 - [PIPEDA] Personal Information Protection and Electronic Documents Act. https://laws-lois.justice.gc.ca/eng/acts/P-8.6/
 - [Terner-2017] Galante, Draper-Zivetz, Stein, "Building Affordability by Building Affordably", Terner Center, March 2017 (sections "Cost Savings", "Time Savings"). https://ternercenter.berkeley.edu/wp-content/uploads/2020/08/offsite_construction.pdf
 - [UBS-2017] Portes, Reed, Percy, "Social prosperity for the future: A proposal for Universal Basic Services", UCL IGP, 2017. https://discovery.ucl.ac.uk/id/eprint/10080175/

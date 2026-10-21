@@ -210,7 +210,6 @@ paper	24	- [OBC-2024] O. Reg. 163/24, Building Code 	id	regulation number O. Reg
 paper	541	oard, Net metering (O. Reg. 541/05 s. 8(8)).	id	regulation number O. Reg. 541/05
 paper	05	, Net metering (O. Reg. 541/05 s. 8(8)).	id	regulation number O. Reg. 541/05
 paper	8	metering (O. Reg. 541/05 s. 8(8)).	id	regulation subsection s. 8(8)
-paper	2025-11-01	lectricity rates (effective 2025-11-01).	date	date or year
 paper	2017	- [Terner-2017] Galante, Drape	date	date or year
 paper	2017	- [UBS-2017] Portes, Reed, 	date	date or year
 paper	2020	- [WEF-2020] World Economic	date	date or year
@@ -328,7 +327,6 @@ claims.tsv	2017	UCL IGP 2017, "What are Univ	date	date or year
 claims.tsv	2.21	y (latitude tilt), December 2.21	quote	[NRCan-PV] municip_kWh.csv Toronto December latitude tilt
 claims.tsv	365	`model`: kWp × PSH × 365 × PR (E1–E3)	unit	days per year
 claims.tsv	1	Ontario RPP Tier 1 =	id	tariff tier name (Tier 1)
-claims.tsv	2025	 by the OEB for November 1, 2025	date	date or year
 claims.tsv	1	`model` E2b = E2 × Tier 1	id	tariff tier name (Tier 1)
 claims.tsv	12	 cash; credits expire after 12 months	quote	[OEB-NM] "up to 12 months"
 claims.tsv	8	metering works" + note on s.8(8) O. Reg. 541/	id	regulation subsection s. 8(8)
@@ -413,7 +411,6 @@ claims.tsv	802	tario,Toronto,Annual/Annuel,802, , || Ontario/O	quote	[NRCan-PV] 
 claims.tsv	53	o,Toronto,December/Décembre,53, ,	quote	[NRCan-PV] CSV row text quoted verbatim as an evidence needle (other tilt columns)
 claims.tsv	2.93	tario,Toronto,Annual/Annuel,2.93, , || Ontario/O	quote	[NRCan-PV] CSV row text quoted verbatim as an evidence needle (other tilt columns)
 claims.tsv	2.26,2.21	o,Toronto,December/Décembre,2.26,2.21,	quote	[NRCan-PV] CSV row text quoted verbatim as an evidence needle (other tilt columns)
-claims.tsv	750	first 750 kWh/month |	quote	[OEB] rates table "first 750 kWh/month" quoted as an evidence needle
 claims.tsv	64	ithout attic storage | 38 × 64 | 400 | 2.4 | |	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 row quoted as an evidence needle
 claims.tsv	400	t attic storage | 38 × 64 | 400 | 2.4 | | | | 3	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 row quoted as an evidence needle
 claims.tsv	2.4	c storage | 38 × 64 | 400 | 2.4 | | | | 38 × 89	quote	[NRC-PCF-1677] NBC 2020 Table 9.23.10.1 row quoted as an evidence needle
@@ -529,7 +526,6 @@ paper	4	oor goals are kept. Section 4 states what wou	id	section cross-reference
 paper	20	tly verified** | "More than 20 percent" at sca	quote	[McKinsey-2019] "20 to 50 percent" / "more than 20 percent"; [Terner-2017] "between 40 and 50 percent" (evidence needle or quote)
 paper	12	per corner (L in ft, 12 in/ft).	unit	inches per foot
 claims.tsv	7	a collection of 7 free public ser	quote	[UBS-2017] "a collection of 7 free public services"
-claims.tsv	1	set by the OEB for November 1, 2025	date	date (November 1, 2025)
 claims.tsv	20	by 20 to 50 percent |	quote	[McKinsey-2019] "20 to 50 percent" / "more than 20 percent"; [Terner-2017] "between 40 and 50 percent" (evidence needle or quote)
 claims.tsv	50	by 20 to 50 percent || more	quote	[McKinsey-2019] "20 to 50 percent" / "more than 20 percent"; [Terner-2017] "between 40 and 50 percent" (evidence needle or quote)
 claims.tsv	40	 of construction || between 40 and 50 percent	quote	[McKinsey-2019] "20 to 50 percent" / "more than 20 percent"; [Terner-2017] "between 40 and 50 percent" (evidence needle or quote)
@@ -547,13 +543,22 @@ paper	1	Energy-only payback at Tier 1 is	id	tariff tier name (Tier 1)
 paper	1	value every kWh at the Tier-1 price and assum	id	tariff tier name (Tier 1)
 paper	1	at Tier 1 to $	id	tariff tier name (Tier 1)
 paper	1	n is unsourced, so the Tier-1 bill offsets ar	id	tariff tier name (Tier 1)
-claims.tsv	2025-11-01	eak =   (from 2025-11-01)	date	date or year
 claims.tsv	1	p bill offset $ /yr at Tier 1 (unit consumpti	id	tariff tier name (Tier 1)
 claims.tsv	1	derived; at Tier 1	id	tariff tier name (Tier 1)
 claims.tsv	1	Energy-only payback at Tier 1	id	tariff tier name (Tier 1)
 paper	2	t OEB's higher prices (Tier 2, time-of-use or	id	tariff tier name (Tier 2)
 paper	2	nd OEB's other prices (Tier 2	id	tariff tier name (Tier 2)
 claims.tsv	2	¢/kWh, Tier 2 =	id	tariff tier name (Tier 2)
-claims.tsv	750	ember 1, 2025 || used above 750 kWh/month |	quote	[OEB-RPP] "Non-residential – for electricity used above 750 kWh/month" (evidence needle)
 claims.tsv	4	|| On-Peak Weekdays 4 p.m. – 9 p.m.	quote	[OEB-RPP] ULO "On-Peak Weekdays 4 p.m. – 9 p.m." (evidence needle)
 claims.tsv	9	| On-Peak Weekdays 4 p.m. – 9 p.m.	quote	[OEB-RPP] ULO "On-Peak Weekdays 4 p.m. – 9 p.m." (evidence needle)
+paper	1	n offsets at Tier 1, and up to ab	id	tariff tier name (Tier 1) or November 1 date
+readme	1	**$ /yr** at Tier 1, and up to ab	id	tariff tier name (Tier 1) or November 1 date
+readme	1	ayback.** At Tier 1, energy alone	id	tariff tier name (Tier 1) or November 1 date
+readme	1	of **$ ** at Tier 1 to **$ ** at 	id	tariff tier name (Tier 1) or November 1 date
+claims.tsv	2025-11-01	oeb-rates.txt + oeb-rates-2025-11-01.txt	id	excerpt file name (OEB prices set for 2025-11-01)
+claims.tsv	750	dential – first 750 kWh/month   |	quote	[OEB] rates table "first 750 kWh/month" quoted as an evidence needle
+claims.tsv	1	 OEB for November 1, 2026 || used	quote	[OEB] page heading "set by the OEB for November 1, 2026" quoted as an evidence needle
+claims.tsv	2026	B for November 1, 2026 || used above	quote	[OEB] page heading "set by the OEB for November 1, 2026" quoted as an evidence needle
+claims.tsv	750	026 || used above 750 kWh/month   |	quote	[OEB] rates table "first 750 kWh/month" quoted as an evidence needle
+claims.tsv	11	nth   || Weekdays 11 a.m. – 5 p.	quote	[OEB] TOU on-peak period "Weekdays 11 a.m. – 5 p.m." quoted as an evidence needle
+claims.tsv	5	kdays 11 a.m. – 5 p.m.   || On-	quote	[OEB] TOU on-peak period "Weekdays 11 a.m. – 5 p.m." quoted as an evidence needle

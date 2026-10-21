@@ -12,10 +12,10 @@ CHOAM is an open, copyleft standard for **government-provided** modular homes of
 
 ## What the numbers say
 
-- **Solar output.** A 5 kWp array in Toronto yields **5,815 kWh/yr** (NRCan). If every kWh offset Tier-1 consumption it would be worth at most **$697.80/yr** (OEB); the unit's consumption is not yet sourced.
+- **Solar output.** A 5 kWp array in Toronto yields **5,815 kWh/yr** (NRCan). If every kWh offset Tier-1 consumption it would be worth **$651.28/yr** at Tier 1, and up to about **$2,192/yr** if every kWh offset ULO on-peak consumption (OEB prices effective 2026-11-01); which applies depends on the unit's consumption, which is not yet sourced.
 - **No cash revenue.** Ontario net metering pays credits, not cash.
-- **Energy-only payback.** Energy alone repays a $50k unit in no less than **71.7 yr** and an $80k unit in no less than **114.6 yr**. A 7-year energy-only ROI would need a unit cost of at most **$4,884.60**.
-- **Shell materials.** The partial shell materials for 200 sq ft (framing, OSB, R22, drywall; Kent.ca retail, 2026-10-18, pre-tax) come to **$4,949.10**. Energy alone does not repay a $50k unit in 7 years at any OEB price: that would need $1.23/kWh, 3.1× OEB's highest price (39.1 ¢/kWh). Revenue-positive depends on avoided public costs or on a cash export tariff. Paper sections 2 and 10 explain what would have to change. The rest of the unit is not yet derived, so the $50–80k target is unverified.
+- **Energy-only payback.** At Tier 1, energy alone repays a $50k unit in **76.8 yr** and an $80k unit in **122.8 yr**. A 7-year energy-only ROI would need a unit cost of **$4,558.96** at Tier 1 to **$15,345.78** at ULO on-peak (E7–E10).
+- **Shell materials.** The partial shell materials for 200 sq ft (framing, OSB, R22, drywall; Kent.ca retail, 2026-10-18, pre-tax) come to **$4,949.10**. Energy alone does not repay a $50k unit in 7 years at any OEB price: that would need $1.23/kWh, 3.3× OEB's highest price (37.7 ¢/kWh). Revenue-positive depends on avoided public costs or on a cash export tariff. Paper sections 2 and 10 explain what would have to change. The rest of the unit is not yet derived, so the $50–80k target is unverified.
 - **Factory scale.** One factory at 2,000 units/yr meets **0.42%** of CMHC's annual need (477,840 starts/yr).
 - **Build speed and cost.** Factory building is 20–50% faster in the literature. On cost, McKinsey reports "more than 20 percent" savings at scale and Terner "up to 20 percent" for multifamily; neither quantifies 30%.
 - **Standards.** The off-site standards are ICC/MBI 1200, 1205 and 1210, and CSA A277 is the Canadian factory-certification route. (The "ICC 1220" in earlier drafts does not exist.)
