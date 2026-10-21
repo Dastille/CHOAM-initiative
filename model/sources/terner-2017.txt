@@ -1,0 +1,13 @@
+# Source: Terner Center (2017), Off-Site Construction (PDF)
+# URL: https://ternercenter.berkeley.edu/wp-content/uploads/2020/08/offsite_construction.pdf
+# Accessed: 2026-10-18 03:01 America/New_York (EDT)
+# Method: curl of the PDF, pdftotext -layout
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+Evidence from developers suggests that off-site construction, as it is currently practiced, can
+save up to 20 percent on the cost of construction for a three or four story wood frame
+multifamily apartment building, translating to significant savings for consumers.
+[...]
+Off-site construction can reduce project
+construction time by between 40 and 50 percent, because several aspects of the construction
+process can be completed simultaneously, rather than sequentially

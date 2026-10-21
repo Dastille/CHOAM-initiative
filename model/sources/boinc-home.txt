@@ -1,0 +1,9 @@
+# Source: BOINC home page and project list
+# URL: https://boinc.berkeley.edu/ ; https://boinc.berkeley.edu/projects.php
+# Accessed: 2026-10-18 03:04 America/New_York (EDT)
+# Method: curl, HTML tags stripped
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+Visit Volunteer Computing News for more
+[...]
+BOINC is used by many projects. You can participate in any number of these projects.

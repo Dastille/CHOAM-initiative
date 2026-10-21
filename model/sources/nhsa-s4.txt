@@ -1,0 +1,9 @@
+# Source: National Housing Strategy Act (S.C. 2019, c. 29, s. 313), section 4
+# URL: https://laws-lois.justice.gc.ca/eng/acts/N-11.2/section-4.html
+# Accessed: 2026-10-18 03:02 America/New_York (EDT)
+# Method: WebFetch text extraction of the public page
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+4 It is declared to be the housing policy of the Government of Canada to
+
+- (a) recognize that the right to adequate housing is a fundamental human right affirmed in international law;

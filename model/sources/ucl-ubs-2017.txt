@@ -1,0 +1,14 @@
+# Source: Portes, Reed, Percy (2017), Social prosperity for the future: A proposal for Universal Basic Services, UCL IGP
+# URL: https://discovery.ucl.ac.uk/id/eprint/10080175/1/universal_basic_services_-_the_institute_for_global_prosperity_.pdf
+# Accessed: 2026-10-18 03:04 America/New_York (EDT)
+# Method: curl of the PDF, pdftotext -layout
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+Universal Basic Services (UBS) are a collection of 7 free public services that enable every
+citizen to live a larger life by ensuring access to safety, opportunity, and participation.
+
+We repurpose the idea of public services to look at the feasibility of extending the same
+principles of universal access, free at the point of need, which we already manifest in our
+National Health Service, our public education, our democracy, and our legal services (albeit
+with variable quality). To the 3 existing public services we add Shelter, Food, Transport and
+Information.

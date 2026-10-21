@@ -1,0 +1,13 @@
+# Source: World Economic Forum (2020), Exploring Blockchain Technology for Government Transparency
+# URL: https://www3.weforum.org/docs/WEF_Blockchain_Government_Transparency_Report.pdf
+# Accessed: 2026-10-18 03:04 America/New_York (EDT)
+# Method: curl of the PDF, pdftotext -layout (two-column layout; one column's lines kept)
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+A blockchain-based solution is also unable to reduce
+corruption risk in certain human activities that can occur
+outside the electronic procurement system, most notably
+bribery or collusion among vendors or between vendors and
+tenderers.
+[...]
+1. Permanent and tamper-evident record-keeping

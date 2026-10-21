@@ -1,0 +1,13 @@
+# Source: Kent.ca product page, SKU 1016278
+# URL: https://kent.ca/en/2-x-6-x-8-spf-stud-kiln-dried-1016278
+# Accessed: 2026-10-18 03:00-03:03 America/New_York (EDT)
+# Method: WebFetch text extraction of the public product page
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+2 x 6 x 8' SPF Stud Kiln Dried - Kent.ca
+[...]
+ $6.68
+[...]
+- Length of 8'
+[...]
+ SKU # 1016278

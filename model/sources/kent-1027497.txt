@@ -1,0 +1,13 @@
+# Source: Kent.ca product page, SKU 1027497
+# URL: https://kent.ca/en/7-16-x-4-x-8-osb-1027497
+# Accessed: 2026-10-18 03:00-03:03 America/New_York (EDT)
+# Method: WebFetch text extraction of the public product page
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+7/16" x 4' x 8' OSB - Kent.ca
+[...]
+ $16.23
+[...]
+- Covers 32 square feet
+[...]
+ SKU # 1027497

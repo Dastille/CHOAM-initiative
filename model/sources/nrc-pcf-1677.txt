@@ -1,0 +1,14 @@
+# Source: NRC, Proposed Change 1677 (NBC20 Div.B Table 9.23.10.1., first printing)
+# URL: https://nrc.canada.ca/en/certifications-evaluations-standards/codes-canada/codes-development-process/public-review/2022/pcfs/nbc20_divb_09.23.10.01._table_001677.html
+# Accessed: 2026-10-18 03:04 America/New_York (EDT)
+# Method: WebFetch text extraction of the public page
+# Verbatim excerpt of the retrieved text; "[...]" marks omitted text. Not edited otherwise.
+---
+NBC20 Div.B Table 9.23.10.1. (first printing)
+[...]
+Table 9.23.10.1. currently lacks clarity about whether or not this common stud size and spacing may be used where it will only support a roof or a roof plus one floor.
+[...]
+| Exterior | Roof with or without attic storage | 38 × 64 | 400 | 2.4 |
+| | | 38 × 89 | 600 | 3.0 |
+| | Roof with or without attic storage plus one floor | 38 × 89 | 400 | 3.0 |
+| | | 38 × 140 | 600 | 3.0 |
